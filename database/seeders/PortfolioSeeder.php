@@ -156,23 +156,30 @@ class PortfolioSeeder extends Seeder
             // Backend
             ['name' => 'Laravel',      'category' => 'Backend',  'proficiency' => 92, 'icon' => 'brand-laravel',   'sort_order' => 1],
             ['name' => 'PHP',          'category' => 'Backend',  'proficiency' => 90, 'icon' => 'brand-php',       'sort_order' => 2],
-            ['name' => 'Livewire',     'category' => 'Backend',  'proficiency' => 88, 'icon' => 'bolt',            'sort_order' => 3],
             ['name' => 'REST APIs',    'category' => 'Backend',  'proficiency' => 90, 'icon' => 'api',             'sort_order' => 4],
-            ['name' => 'Filament',     'category' => 'Backend',  'proficiency' => 82, 'icon' => 'layout-dashboard','sort_order' => 5],
+            ['name' => 'Nginx',        'category' => 'Backend',  'proficiency' => 82, 'icon' => 'layout-dashboard','sort_order' => 5],
+            ['name' => 'CodeIgniter',  'category' => 'Backend',  'proficiency' => 82, 'icon' => 'layout-dashboard','sort_order' => 5],
             // Frontend
-            ['name' => 'Tailwind CSS', 'category' => 'Frontend', 'proficiency' => 85, 'icon' => 'brand-tailwind',  'sort_order' => 1],
-            ['name' => 'Alpine.js',    'category' => 'Frontend', 'proficiency' => 78, 'icon' => 'brand-javascript','sort_order' => 2],
-            ['name' => 'Three.js',     'category' => 'Frontend', 'proficiency' => 65, 'icon' => 'brand-threejs',   'sort_order' => 3],
-            ['name' => 'Vue.js',       'category' => 'Frontend', 'proficiency' => 65, 'icon' => 'brand-vue',       'sort_order' => 4],
+            ['name' => 'Livewire',     'category' => 'Frontend', 'proficiency' => 88, 'icon' => 'bolt',            'sort_order' => 1],
+            ['name' => 'Tailwind CSS', 'category' => 'Frontend', 'proficiency' => 85, 'icon' => 'brand-tailwind',  'sort_order' => 2],
+            ['name' => 'Alpine.js',    'category' => 'Frontend', 'proficiency' => 78, 'icon' => 'brand-javascript','sort_order' => 3],
+            ['name' => 'Three.js',     'category' => 'Frontend', 'proficiency' => 65, 'icon' => 'brand-threejs',   'sort_order' => 4],
+            ['name' => 'JavaScript',   'category' => 'Frontend', 'proficiency' => 65, 'icon' => 'brand-threejs',   'sort_order' => 5],
+            ['name' => 'AngularJS',    'category' => 'Frontend', 'proficiency' => 65, 'icon' => 'brand-threejs',   'sort_order' => 6],
+            ['name' => 'Vue.js',       'category' => 'Frontend', 'proficiency' => 65, 'icon' => 'brand-vue',       'sort_order' => 7],
             // Database
             ['name' => 'MySQL',        'category' => 'Database', 'proficiency' => 86, 'icon' => 'database',        'sort_order' => 1],
             ['name' => 'Eloquent ORM', 'category' => 'Database', 'proficiency' => 88, 'icon' => 'table',           'sort_order' => 2],
             // Tools & AI
-            ['name' => 'FCM / Push',   'category' => 'Tools & AI','proficiency' => 80, 'icon' => 'bell',           'sort_order' => 1],
-            ['name' => 'Socket.io',    'category' => 'Tools & AI','proficiency' => 72, 'icon' => 'arrows-exchange','sort_order' => 2],
-            ['name' => 'Claude Code',  'category' => 'Tools & AI','proficiency' => 78, 'icon' => 'robot',          'sort_order' => 3],
-            ['name' => 'Git / GitHub', 'category' => 'Tools & AI','proficiency' => 85, 'icon' => 'brand-github',   'sort_order' => 4],
-            ['name' => 'Nginx',        'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 5],
+            ['name' => 'FCM',           'category' => 'Tools & AI','proficiency' => 80, 'icon' => 'bell',           'sort_order' => 1],
+            ['name' => 'Socket.io',     'category' => 'Tools & AI','proficiency' => 72, 'icon' => 'arrows-exchange','sort_order' => 2],
+            ['name' => 'Claude Code',   'category' => 'Tools & AI','proficiency' => 78, 'icon' => 'robot',          'sort_order' => 3],
+            ['name' => 'SonarQube',     'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 4],
+            ['name' => 'Git',           'category' => 'Tools & AI','proficiency' => 85, 'icon' => 'brand-github',   'sort_order' => 5],
+            ['name' => 'Nginx',         'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 6],
+            ['name' => 'FMP',           'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 7],
+            ['name' => 'MUX',           'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 8],
+            ['name' => 'Filament',      'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 9],
         ];
 
         foreach ($skills as $s) {

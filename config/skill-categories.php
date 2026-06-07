@@ -10,9 +10,9 @@ return [
         ],
 
         'Backend' => [
-            'light' => 'bg-violet-50 text-violet-700 border-violet-200 hover:border-violet-300',
-            'dot'   => 'bg-violet-500',
-            'badge' => 'bg-violet-100 text-violet-700',
+            'light' => 'bg-indigo-50 text-indigo-700 border-indigo-200 hover:border-indigo-300',
+            'dot'   => 'bg-indigo-500',
+            'badge' => 'bg-indigo-100 text-indigo-700',
         ],
 
         'Frontend' => [
@@ -22,16 +22,16 @@ return [
         ],
 
         'Database' => [
-            'light' => 'bg-amber-50 text-amber-700 border-amber-200 hover:border-amber-300',
-            'dot'   => 'bg-amber-500',
-            'badge' => 'bg-amber-100 text-amber-700',
+            'light' => 'bg-rose-50 text-rose-700 border-rose-200 hover:border-rose-300',
+            'dot'   => 'bg-rose-500',
+            'badge' => 'bg-rose-100 text-rose-700',
         ],
 
         'Tools & AI' => [
-            'light' => 'bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300',
-            'dot'   => 'bg-slate-500',
-            'badge' => 'bg-slate-100 text-slate-700',
-        ]
+            'light' => 'bg-sky-50 text-sky-700 border-sky-200 hover:border-sky-300',
+            'dot'   => 'bg-sky-500',
+            'badge' => 'bg-sky-100 text-sky-700',
+        ],
     ],
 
     'technologies' => [
@@ -39,9 +39,9 @@ return [
         'Laravel'       => 'Backend',
         'PHP'           => 'Backend',
         'REST APIs'     => 'Backend',
-        'Eloquent ORM'  => 'Backend',
-        'Socket.io'     => 'Backend',
         'Nginx'         => 'Backend',
+        'CodeIgniter'   => 'Backend',
+        'Filament'      => 'Backend',
 
         // Frontend
         'Livewire'      => 'Frontend',
@@ -49,15 +49,25 @@ return [
         'Tailwind CSS'  => 'Frontend',
         'Alpine.js'     => 'Frontend',
         'Three.js'      => 'Frontend',
+        'AngularJS'     => 'Frontend',
+        'JavaScript'    => 'Frontend',
 
         // Database
         'MySQL'         => 'Database',
+        'Eloquent ORM'  => 'Database',
 
         // Tools & AI
-        'Git / GitHub'  => 'Tools & AI',
+        'Git'           => 'Tools & AI',
+        'GitHub'        => 'Tools & AI',
         'Filament'      => 'Tools & AI',
-        'FCM / Push'    => 'Tools & AI',
+        'FCM'           => 'Tools & AI',
+        'FMP'           => 'Tools & AI',
         'Claude Code'   => 'Tools & AI',
+        'AI'            => 'Tools & AI',
+        'Echo'          => 'Tools & AI',
+        'SonarQube'     => 'Tools & AI',
+        'Socket.io'     => 'Tools & AI',
+        'MUX'           => 'Tools & AI',
     ],
 
 ];
