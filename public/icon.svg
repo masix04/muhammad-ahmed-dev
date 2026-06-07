@@ -1,0 +1,5 @@
+<svg class="logo-mark" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="32" height="32" rx="8" fill="#534AB7"/>
+    <path d="M7 23V10L13.5 20.5L16 16L18.5 20.5L25 10V23" stroke="#EEEDFE" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="25" cy="23" r="2" fill="#5DCAA5"/>
+</svg>

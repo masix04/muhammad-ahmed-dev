@@ -1,0 +1,238 @@
+/* ── Tailwind v4: single import replaces @tailwind base/components/utilities ── */
+@import "tailwindcss";
+
+/* ── Google Fonts ─────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+
+/* ── Tailwind v4 theme configuration (replaces tailwind.config.js) ─────────── */
+@theme {
+    /* Fonts */
+    --font-sans:  'DM Sans', system-ui, sans-serif;
+    --font-serif: 'Instrument Serif', Georgia, serif;
+
+    /* Brand colours (minimal stone palette) */
+    --color-brand-50:  oklch(97% 0.005 60);
+    --color-brand-100: oklch(94% 0.01  60);
+    --color-brand-200: oklch(88% 0.015 60);
+    --color-brand-500: oklch(55% 0.02  60);
+    --color-brand-900: oklch(18% 0.01  60);
+
+    /* Animations */
+    --animate-fade-up:   fadeUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+    --animate-float:     float 4s ease-in-out infinite;
+    --animate-pulse-dot: pulseDot 2s ease-in-out infinite;
+
+    /* Keyframes */
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50%       { transform: translateY(-6px); }
+    }
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.4; }
+    }
+    @keyframes heroBadgeIn {
+        from { opacity: 0; transform: translateY(8px) scale(0.95); }
+        to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+}
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+[x-cloak] { display: none !important; }
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Hero floating tag entrance ───────────────────────────────────────────── */
+.hero-tag {
+    opacity: 0;
+    animation: heroBadgeIn 0.5s ease forwards;
+}
+
+/* ── Intersection observer fade-up helper ─────────────────────────────────── */
+.will-fade-up {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.will-fade-up.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Custom scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 2px; }
+
+/* ── Three.js canvas ──────────────────────────────────────────────────────── */
+#hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── Prose overrides ──────────────────────────────────────────────────────── */
+.prose a            { text-decoration-color: #d6d3d1; }
+.prose strong       { font-weight: 500; }
+.prose h3           { font-family: var(--font-serif); font-weight: 400; }
+
+
+/* Terminal CSS */
+
+.terminal{
+    background:#1c1917;
+    border:1px solid #292524;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:
+        0 30px 80px rgba(0,0,0,.25),
+        0 0 0 1px rgba(255,255,255,.03);
+    backdrop-filter:blur(20px);
+}
+
+.terminal-header{
+    display:flex;
+    gap:8px;
+    padding:12px 16px;
+    border-bottom:1px solid #292524;
+}
+
+.terminal-header span{
+    width:10px;
+    height:10px;
+    border-radius:9999px;
+}
+
+.terminal-header span:nth-child(1){
+    background:#ef4444;
+}
+
+.terminal-header span:nth-child(2){
+    background:#f59e0b;
+}
+
+.terminal-header span:nth-child(3){
+    background:#22c55e;
+}
+
+.terminal-body{
+    padding:20px;
+    min-height:320px;
+    font-family:monospace;
+    font-size:13px;
+    line-height:1.8;
+    color:#e7e5e4;
+}
+
+.term-command{
+    color:#5DCAA5;
+}
+
+.term-success{
+    color:#22c55e;
+}
+
+.term-accent{
+    color:#AFA9EC;
+}
+
+.cursor{
+    display:inline-block;
+    width:8px;
+    height:18px;
+    background:#AFA9EC;
+    margin-left:2px;
+    animation:blink 1s infinite;
+}
+
+@keyframes blink{
+    50%{
+        opacity:0;
+    }
+}
+
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.logo-mark{width:32px;height:32px;position:relative;flex-shrink:0}
+.logo-text{font-size:14px;font-weight:500;color:var(--color-text-primary);letter-spacing:-0.01em}
+.logo-text span{color:#534AB7}
+
+/* Workspace Cards */
+
+.workspace-card{
+    position:absolute;
+    width:280px;
+
+    padding:1rem;
+
+    border-radius:1.5rem;
+
+    background:rgba(255,255,255,.75);
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid rgba(255,255,255,.5);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.08);
+
+    transition:
+        transform .35s ease,
+        opacity .35s ease;
+}
+
+.workspace-card.active{
+    transform:translateZ(220px) scale(1.08)!important;
+}
+
+.workspace-card.dim{
+    opacity:.35;
+}
+
+.workspace-card h3{
+    font-size:15px;
+    font-weight:600;
+    color:#1c1917;
+}
+
+.workspace-card p{
+    font-size:12px;
+    color:#78716c;
+    margin-top:4px;
+}
+
+.tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+    margin-top:12px;
+}
+
+.tags span{
+    font-size:10px;
+    padding:4px 10px;
+    border-radius:999px;
+    background:#eeedfe;
+    color:#534ab7;
+}
+
+.workspace-card.active{
+    z-index:100;
+    transform:scale(1.15) translateZ(80px) !important;
+
+    box-shadow:
+        0 30px 80px rgba(83,74,183,.25);
+}
+
+.workspace-card.dim{
+    opacity:.35;
+}
