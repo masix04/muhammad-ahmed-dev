@@ -1,6 +1,6 @@
 FROM php:8.4-cli
 
-# System packages
+# System dependencies
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     libonig-dev \
     libxml2-dev \
     libicu-dev \
-    default-mysql-client \
     nodejs \
     npm \
     && rm -rf /var/lib/apt/lists/*
@@ -21,7 +20,7 @@ RUN apt-get update && apt-get install -y \
 # PHP extensions
 RUN docker-php-ext-install \
     pdo \
-    pdo_mysql \
+    pdo_sqlite \
     mbstring \
     zip \
     exif \
@@ -36,7 +35,7 @@ WORKDIR /var/www/html
 # Copy application
 COPY . .
 
-# Storage folders
+# Laravel directories
 RUN mkdir -p \
     storage/framework/cache/data \
     storage/framework/sessions \
@@ -44,9 +43,12 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache
 
-RUN chmod -R 775 storage bootstrap/cache
+# SQLite database
+RUN touch career-portfolio
 
-# PHP dependencies
+RUN chmod -R 775 storage bootstrap/cache career-portfolio
+
+# Install PHP packages
 RUN composer install \
     --no-dev \
     --prefer-dist \
@@ -54,14 +56,15 @@ RUN composer install \
     --no-interaction \
     --no-scripts
 
-# Frontend dependencies
+# Install Node packages
 RUN npm install
 
-# Build Vite assets
+# Build assets
 RUN npm run build
 
 EXPOSE 10000
 
 CMD php artisan migrate --force && \
+    php artisan db:seed --force && \
     php artisan config:clear && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
