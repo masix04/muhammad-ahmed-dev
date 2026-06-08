@@ -40,7 +40,12 @@ RUN composer install \
     --no-dev \
     --prefer-dist \
     --optimize-autoloader \
-    --no-interaction
+    --no-interaction \
+    --no-scripts
+
+COPY . .
+
+RUN php artisan package:discover --ansi
 
 # Install Node dependencies
 COPY package.json package-lock.json* ./
