@@ -6,59 +6,67 @@ RUN apt-get update && apt-get install -y \
     curl \
     unzip \
     zip \
-    sqlite3 \
-    libsqlite3-dev \
     libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    libicu-dev \
+    default-mysql-client \
     nodejs \
     npm \
     && rm -rf /var/lib/apt/lists/*
 
-# PHP extensions
+# PHP Extensions
 RUN docker-php-ext-install \
     pdo \
-    pdo_sqlite \
-    zip
+    pdo_mysql \
+    mbstring \
+    zip \
+    exif \
+    pcntl \
+    intl
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Install dependencies first (better cache)
+# Install PHP dependencies first (cache layer)
 COPY composer.json composer.lock ./
+
 RUN composer install \
     --no-dev \
+    --prefer-dist \
     --optimize-autoloader \
-    --no-interaction \
-    --no-scripts
+    --no-interaction
 
+# Install Node dependencies
 COPY package.json package-lock.json* ./
+
 RUN npm install
 
 # Copy application
 COPY . .
 
-# Build frontend
+# Build Vite assets
 RUN npm run build
 
-# Finish composer
-RUN composer dump-autoload --optimize
+# Laravel permissions
+RUN mkdir -p storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs
 
-# SQLite database
-RUN mkdir -p database
-RUN touch database/database.sqlite
+RUN chmod -R 775 storage bootstrap/cache
 
-# Laravel directories
-RUN mkdir -p storage/framework/cache
-RUN mkdir -p storage/framework/sessions
-RUN mkdir -p storage/framework/views
-RUN mkdir -p storage/logs
-
-# Permissions
-RUN chmod -R 775 storage bootstrap/cache database
-
+# Expose Render port
 EXPOSE 10000
 
-CMD php artisan migrate --force && \
+CMD php artisan config:cache && \
+    php artisan route:cache && \
+    php artisan view:cache && \
+    php artisan migrate --force && \
     php artisan db:seed --force && \
     php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
