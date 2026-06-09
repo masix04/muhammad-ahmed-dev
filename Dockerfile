@@ -41,14 +41,14 @@ RUN composer dump-autoload --optimize
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    zip \
-    curl \
     sqlite3 \
     libsqlite3-dev \
     libzip-dev \
     libicu-dev \
+    unzip \
+    zip \
+    curl \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install \
@@ -59,25 +59,23 @@ RUN docker-php-ext-install \
 
 WORKDIR /var/www/html
 
-# Copy Application
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader
+COPY --from=vendor /app/vendor ./vendor
 
-RUN npm install
-RUN npm run build
+COPY --from=frontend /app/public/build ./public/build
 
-# Storage
-RUN mkdir -p storage/framework/cache
-RUN mkdir -p storage/framework/sessions
-RUN mkdir -p storage/framework/views
-
+RUN mkdir -p \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
 
 RUN chmod -R 775 storage bootstrap/cache
 
-# Laravel cache files
-# RUN php artisan package:discover --ansi || true
+RUN touch database/database.sqlite
 
 EXPOSE 10000
 
-CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+CMD php artisan serve \ --host=0.0.0.0 \ --port=${PORT:-10000}
