@@ -31,11 +31,6 @@ RUN composer install \
     --no-scripts \
     --ignore-platform-reqs
 
-COPY . .
-
-# Added here too just in case
-RUN composer dump-autoload --optimize --ignore-platform-reqs
-
 # ============================================================
 # Stage 3 - Runtime
 # ============================================================
@@ -76,6 +71,9 @@ RUN mkdir -p \
 RUN touch career-portfolio
 
 RUN chmod -R 777 storage bootstrap/cache database
+
+# 5. NOW optimize the autoloader safely, allowing scripts to run
+RUN composer dump-autoload --optimize
 
 # Cache clear so build doesn't fail
 RUN php artisan config:clear || true

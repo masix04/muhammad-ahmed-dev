@@ -9,7 +9,7 @@ class CertificationsSection extends Component
     public function render()
     {
         return view('livewire.certifications-section', [
-            'certifications' => \App\Models\Certification::visible()->ordered()->get(),
+            'certifications' => Certification::visible()->ordered()->get(),
         ]);
     }
 }

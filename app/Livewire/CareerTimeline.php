@@ -21,7 +21,7 @@ class CareerTimeline extends Component
 
     public function render()
     {
-        $experiences = \App\Models\WorkExperience::ordered()->get();
+        $experiences = WorkExperience::ordered()->get();
 
         // Auto-open the most recent entry on first render
         if (empty($this->openItems) && $experiences->isNotEmpty()) {
