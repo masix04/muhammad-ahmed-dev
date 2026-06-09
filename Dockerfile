@@ -1,54 +1,28 @@
-FROM php:8.4-cli
+# ============================================================
+# Stage 1 - Build Frontend Assets
+# ============================================================
+FROM node:22 AS frontend
 
-# System dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    unzip \
-    zip \
-    libzip-dev \
-    libpng-dev \
-    libjpeg62-turbo-dev \
-    libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \
-    libicu-dev \
-    nodejs \
-    npm \
-    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
 
-# PHP extensions
-RUN docker-php-ext-install \
-    pdo \
-    pdo_sqlite \
-    mbstring \
-    zip \
-    exif \
-    pcntl \
-    intl
+COPY package*.json ./
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+RUN npm install
 
-WORKDIR /var/www/html
-
-# Copy application
 COPY . .
 
-# Laravel directories
-RUN mkdir -p \
-    storage/framework/cache/data \
-    storage/framework/sessions \
-    storage/framework/views \
-    storage/logs \
-    bootstrap/cache
+RUN npm run build
 
-# SQLite database
-RUN touch career-portfolio
 
-RUN chmod -R 775 storage bootstrap/cache career-portfolio
+# ============================================================
+# Stage 2 - Install PHP Dependencies
+# ============================================================
+FROM composer:2 AS vendor
 
-# Install PHP packages
+WORKDIR /app
+
+COPY composer.json composer.lock ./
+
 RUN composer install \
     --no-dev \
     --prefer-dist \
@@ -56,15 +30,54 @@ RUN composer install \
     --no-interaction \
     --no-scripts
 
-# Install Node packages
-RUN npm install
+COPY . .
 
-# Build assets
+RUN composer dump-autoload --optimize
+
+
+# ============================================================
+# Stage 3 - Production Runtime
+# ============================================================
+FROM php:8.4-cli
+
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    curl \
+    sqlite3 \
+    libsqlite3-dev \
+    libzip-dev \
+    libicu-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install \
+    pdo \
+    pdo_sqlite \
+    zip \
+    intl
+
+WORKDIR /var/www/html
+
+# Copy Application
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader
+
+RUN npm install
 RUN npm run build
+
+# Storage
+RUN mkdir -p storage/framework/cache
+RUN mkdir -p storage/framework/sessions
+RUN mkdir -p storage/framework/views
+
+
+RUN chmod -R 775 storage bootstrap/cache
+
+# Laravel cache files
+# RUN php artisan package:discover --ansi || true
 
 EXPOSE 10000
 
-CMD php artisan migrate --force && \
-    php artisan db:seed --force && \
-    php artisan config:clear && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
+CMD php artisan serve --host=0.0.0.0 --port=${PORT:-10000}
