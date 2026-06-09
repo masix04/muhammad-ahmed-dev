@@ -38,44 +38,32 @@ RUN composer dump-autoload --optimize
 # ============================================================
 # Stage 3 - Production Runtime
 # ============================================================
-FROM php:8.4-cli
+FROM php:8.4-cli AS vendor
 
 RUN apt-get update && apt-get install -y \
-    sqlite3 \
-    libsqlite3-dev \
-    libzip-dev \
-    libicu-dev \
+    git \
     unzip \
     zip \
-    curl \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+    libzip-dev \
+    libicu-dev \
+    libsqlite3-dev
 
 RUN docker-php-ext-install \
+    intl \
+    exif \
     pdo \
     pdo_sqlite \
-    zip \
-    intl
+    zip
 
-WORKDIR /var/www/html
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-COPY . .
+WORKDIR /app
 
-COPY --from=vendor /app/vendor ./vendor
+COPY composer.json composer.lock ./
 
-COPY --from=frontend /app/public/build ./public/build
-
-RUN mkdir -p \
-    storage/framework/cache/data \
-    storage/framework/sessions \
-    storage/framework/views \
-    storage/logs \
-    bootstrap/cache
-
-RUN chmod -R 775 storage bootstrap/cache
-
-RUN touch database/database.sqlite
-
-EXPOSE 10000
-
-CMD php artisan serve \ --host=0.0.0.0 \ --port=${PORT:-10000}
+RUN composer install \
+    --no-dev \
+    --prefer-dist \
+    --optimize-autoloader \
+    --no-interaction \
+    --no-scripts
