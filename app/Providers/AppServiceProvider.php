@@ -33,5 +33,10 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('featuredProjects', $featuredProjects);
         });
+
+        // Force HTTPS if running in production (like on Render)
+        if (config('app.env') === 'production' || app()->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }
