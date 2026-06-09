@@ -36,34 +36,52 @@ RUN composer dump-autoload --optimize
 
 
 # ============================================================
-# Stage 3 - Production Runtime
+# Stage 3 - Runtime
 # ============================================================
-FROM php:8.4-cli AS vendor
+FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    zip \
+    sqlite3 \
+    libsqlite3-dev \
     libzip-dev \
     libicu-dev \
-    libsqlite3-dev
+    unzip \
+    zip \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN docker-php-ext-install \
-    intl \
-    exif \
     pdo \
     pdo_sqlite \
-    zip
+    zip \
+    intl
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+WORKDIR /var/www/html
 
-WORKDIR /app
+COPY . .
 
-COPY composer.json composer.lock ./
+COPY --from=vendor /app/vendor ./vendor
 
-RUN composer install \
-    --no-dev \
-    --prefer-dist \
-    --optimize-autoloader \
-    --no-interaction \
-    --no-scripts
+COPY --from=frontend /app/public/build ./public/build
+
+RUN mkdir -p \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
+
+RUN touch database/database.sqlite
+
+RUN chmod -R 777 storage bootstrap/cache database
+
+# Cache clear so build doesn't fail
+RUN php artisan config:clear || true
+RUN php artisan cache:clear || true
+
+EXPOSE 10000
+
+CMD sh -c "\
+php artisan migrate --force && \
+php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
