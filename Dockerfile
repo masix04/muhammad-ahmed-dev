@@ -13,7 +13,6 @@ COPY . .
 
 RUN npm run build
 
-
 # ============================================================
 # Stage 2 - Install PHP Dependencies
 # ============================================================
@@ -23,17 +22,19 @@ WORKDIR /app
 
 COPY composer.json composer.lock ./
 
+# Added --ignore-platform-reqs to bypass extension checks in this isolated stage
 RUN composer install \
     --no-dev \
     --prefer-dist \
     --optimize-autoloader \
     --no-interaction \
-    --no-scripts
+    --no-scripts \
+    --ignore-platform-reqs
 
 COPY . .
 
-RUN composer dump-autoload --optimize
-
+# Added here too just in case
+RUN composer dump-autoload --optimize --ignore-platform-reqs
 
 # ============================================================
 # Stage 3 - Runtime
