@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use Livewire\Component;
 
+use App\Models\Certification;
+
 class CertificationsSection extends Component
 {
     public function render()

@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-
+use App\Models\WorkExperience;
 class CareerTimeline extends Component
 {
     public array $openItems = [];

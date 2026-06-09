@@ -34,6 +34,9 @@ RUN composer install \
 # ============================================================
 # Stage 3 - Runtime
 # ============================================================
+# ============================================================
+# Stage 3 - Runtime
+# ============================================================
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
@@ -55,12 +58,16 @@ RUN docker-php-ext-install \
 
 WORKDIR /var/www/html
 
+# 1. Copy your project files
 COPY . .
 
+# 2. Copy the vendors we downloaded in Stage 2
 COPY --from=vendor /app/vendor ./vendor
 
+# 3. Copy frontend assets
 COPY --from=frontend /app/public/build ./public/build
 
+# 4. Create your storage directories FIRST so Laravel has its cache paths
 RUN mkdir -p \
     storage/framework/cache/data \
     storage/framework/sessions \
@@ -69,10 +76,12 @@ RUN mkdir -p \
     bootstrap/cache
 
 RUN touch career-portfolio
-
 RUN chmod -R 777 storage bootstrap/cache database
 
-# 5. NOW optimize the autoloader safely, allowing scripts to run
+# === THE FIX: Copy the Composer binary from the vendor stage ===
+COPY --from=vendor /usr/bin/composer /usr/bin/composer
+
+# 5. NOW optimize the autoloader safely
 RUN composer dump-autoload --optimize
 
 # Cache clear so build doesn't fail
