@@ -13,9 +13,11 @@ class PortfolioSeeder extends Seeder
         // ── Site settings ─────────────────────────────────────────────────────
         $settings = [
             ['key' => 'hero_name',      'value' => 'Muhammad Ahmed'],
-            ['key' => 'hero_title',     'value' => 'PHP / Laravel Developer'],
-            ['key' => 'hero_tagline',   'value' => '3+ years building full-stack web applications — trading LMS platforms, multi-vendor e-commerce, live sports feeds, and AI-powered tools.'],
-            ['key' => 'open_to_work',   'value' => '1',    'type' => 'boolean'],
+            ['key' => 'hero_title',     'value' => 'Software Engineer · Laravel & AWS'],
+            ['key' => 'hero_tagline',   'value' => '5+ years building full-stack web applications — trading LMS platforms, multi-vendor e-commerce, live sports feeds, and AI-powered tools. Focused on Laravel, Livewire & AWS cloud infrastructure.'],
+            // Hero badges: set to '0' / '' to hide, non-empty to show.
+            ['key' => 'open_to_work',   'value' => '0',    'type' => 'boolean'],
+            ['key' => 'currently_building', 'value' => ''],
             ['key' => 'github_url',     'value' => 'https://github.com/masix04'],
             ['key' => 'linkedin_url',   'value' => 'https://www.linkedin.com/in/muhammad-ahmed-61b21b163/'],
             ['key' => 'email',          'value' => 'muhammadahmed5867@gmail.com'],
@@ -30,14 +32,31 @@ class PortfolioSeeder extends Seeder
         WorkExperience::truncate();
 
         WorkExperience::create([
-            'role'         => 'Freelance Product Developer',
-            'company'      => 'Independent',
+            'role'         => 'Software Engineer (Laravel | AWS)',
+            'company'      => 'Finz Games',
             'location'     => 'Lahore',
-            'period'       => 'Feb 2026 – Present',
-            'start_date'   => '2026-02-01',
+            'period'       => 'Jun 2026 – Present',
+            'start_date'   => '2026-06-15',
             'end_date'     => null,
             'is_current'   => true,
             'sort_order'   => 1,
+            'bullets'      => [
+                ['bullet' => 'Laravel development alongside end-to-end ownership of the cloud infrastructure'],
+                ['bullet' => 'Manage AWS infrastructure: Lightsail instance hosting, S3 buckets for media storage, and CloudFront CDN distribution'],
+                ['bullet' => 'Configured a site-to-site IPsec VPN using StrongSwan on the Lightsail instance to securely integrate a third-party partner’s APIs'],
+            ],
+            'sub_projects' => null,
+        ]);
+
+        WorkExperience::create([
+            'role'         => 'Freelance Product Developer',
+            'company'      => 'Independent',
+            'location'     => 'Lahore',
+            'period'       => 'Feb 2026 – Jun 2026',
+            'start_date'   => '2026-02-01',
+            'end_date'     => '2026-06-14',
+            'is_current'   => false,
+            'sort_order'   => 2,
             'bullets'      => [
                 ['bullet' => 'Multi-tenant e-commerce platform with per-seller storefronts, Stripe & Cashmaal payment integrations'],
                 ['bullet' => 'AI-powered workout tracker with daily/weekly performance reports and personalized routine suggestions'],
@@ -57,7 +76,7 @@ class PortfolioSeeder extends Seeder
             'start_date'   => '2024-06-01',
             'end_date'     => '2025-12-31',
             'is_current'   => false,
-            'sort_order'   => 2,
+            'sort_order'   => 3,
             'bullets'      => [
                 ['bullet' => 'Built role-based dashboards, structured learning modules, and live webinar streaming via OBS + MUX'],
                 ['bullet' => 'Developed School LMS with timetable scheduling, FCM notifications, and RESTful APIs for mobile apps'],
@@ -79,7 +98,7 @@ class PortfolioSeeder extends Seeder
             'start_date'   => '2021-05-01',
             'end_date'     => '2024-06-30',
             'is_current'   => false,
-            'sort_order'   => 3,
+            'sort_order'   => 4,
             'bullets'      => [
                 ['bullet' => 'Built RESTful APIs and CMS functionalities for multiple mobile and web applications'],
                 ['bullet' => 'Led a team of 3 developers on SportScore — live multi-sport scoring platform'],
@@ -180,6 +199,12 @@ class PortfolioSeeder extends Seeder
             ['name' => 'FMP',           'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 7],
             ['name' => 'MUX',           'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 8],
             ['name' => 'Filament',      'category' => 'Tools & AI','proficiency' => 70, 'icon' => 'server',         'sort_order' => 9],
+            // Cloud & DevOps
+            ['name' => 'AWS',           'category' => 'Cloud & DevOps','proficiency' => 75, 'icon' => 'cloud',      'sort_order' => 1],
+            ['name' => 'AWS Lightsail', 'category' => 'Cloud & DevOps','proficiency' => 78, 'icon' => 'server',     'sort_order' => 2],
+            ['name' => 'Amazon S3',     'category' => 'Cloud & DevOps','proficiency' => 76, 'icon' => 'database',   'sort_order' => 3],
+            ['name' => 'CloudFront',    'category' => 'Cloud & DevOps','proficiency' => 72, 'icon' => 'world',      'sort_order' => 4],
+            ['name' => 'StrongSwan',    'category' => 'Cloud & DevOps','proficiency' => 70, 'icon' => 'lock',       'sort_order' => 5],
         ];
 
         foreach ($skills as $s) {

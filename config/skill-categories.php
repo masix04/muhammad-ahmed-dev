@@ -32,6 +32,12 @@ return [
             'dot'   => 'bg-sky-500',
             'badge' => 'bg-sky-100 text-sky-700',
         ],
+
+        'Cloud & DevOps' => [
+            'light' => 'bg-amber-50 text-amber-700 border-amber-200 hover:border-amber-300',
+            'dot'   => 'bg-amber-500',
+            'badge' => 'bg-amber-100 text-amber-700',
+        ],
     ],
 
     'technologies' => [
@@ -68,6 +74,15 @@ return [
         'SonarQube'     => 'Tools & AI',
         'Socket.io'     => 'Tools & AI',
         'MUX'           => 'Tools & AI',
+
+        // Cloud & DevOps
+        'AWS'           => 'Cloud & DevOps',
+        'AWS Lightsail' => 'Cloud & DevOps',
+        'Amazon S3'     => 'Cloud & DevOps',
+        'CloudFront'    => 'Cloud & DevOps',
+        'StrongSwan'    => 'Cloud & DevOps',
+        'IPsec VPN'     => 'Cloud & DevOps',
+        'Docker'        => 'Cloud & DevOps',
     ],
 
 ];

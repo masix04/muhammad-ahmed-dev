@@ -17,13 +17,13 @@ class SkillForm
                     ->required(),
 
                 Select::make('category')
-                    ->options([
-                        'Backend' => 'Backend',
-                        'Frontend' => 'Frontend',
-                        'Database' => 'Database',
-                        'DevOps' => 'DevOps',
-                        'Tools' => 'Tools & AI',
-                    ])
+                    // Driven by config so the admin can never drift from the badge colours.
+                    // 'All' is the front-end filter pseudo-category, not a real one.
+                    ->options(fn () => collect(config('skill-categories.categories'))
+                        ->keys()
+                        ->reject(fn (string $category) => $category === 'All')
+                        ->mapWithKeys(fn (string $category) => [$category => $category])
+                        ->all())
                     ->required(),
 
                 TextInput::make('icon')

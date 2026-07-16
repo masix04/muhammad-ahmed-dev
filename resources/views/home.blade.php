@@ -1,3 +1,7 @@
+@php
+    use App\Models\SiteSetting;
+@endphp
+
 <x-layouts.app>
 
     {{-- ══════════════════════════════════════════════════════════════ --}}
@@ -20,14 +24,16 @@
             {{-- LEFT SIDE (UNCHANGED) --}}
             <div class="space-y-6">
 
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full text-xs text-emerald-700">
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                    Open to opportunities · Lahore, Pakistan
-                </div>
+                @if(SiteSetting::get('open_to_work'))
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-full text-xs text-emerald-700">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        Open to opportunities · {{ SiteSetting::get('location', 'Lahore, Pakistan') }}
+                    </div>
+                @endif
 
                 <div>
                     <p class="text-sm font-light text-stone-400 tracking-widest uppercase mb-2">
-                        Backend Developer
+                        {{ SiteSetting::get('hero_title', 'Software Engineer · Laravel & AWS') }}
                     </p>
 
                     <h1 class="font-serif text-6xl md:text-7xl leading-none text-stone-900">
@@ -37,20 +43,19 @@
                 </div>
 
                 <p class="text-stone-500 font-light leading-relaxed max-w-md">
-                    3+ years building full-stack web applications — trading LMS platforms,
-                    multi-vendor e-commerce, live sports feeds, and AI-powered tools.
-                    Specialist in Laravel, Livewire & real-time systems.
+                    {{ SiteSetting::get('hero_tagline') }}
                 </p>
 
-                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-200 bg-violet-50 text-xs text-violet-700">
-                    <span class="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></span>
-                    <!-- Currently building AI-powered workout platform -->
-                    Currently building AI-powered platform
-                </div>
+                @if($building = SiteSetting::get('currently_building'))
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-violet-200 bg-violet-50 text-xs text-violet-700">
+                        <span class="w-2 h-2 bg-violet-500 rounded-full animate-pulse"></span>
+                        {{ $building }}
+                    </div>
+                @endif
 
                 <div class="flex gap-8 pt-2">
                     @foreach([
-                        ['3+','Years'],
+                        ['5+','Years'],
                         ['10+','Projects'],
                         ['25k+','Notifications'],
                         ['1+','Production Apps']

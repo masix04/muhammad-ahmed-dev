@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Muhammad Ahmed — Laravel Developer' }}</title>
-    <meta name="description" content="PHP/Laravel Developer with 3+ years of experience building full-stack web applications.">
+    <meta name="description" content="Software Engineer with 5+ years of experience building full-stack web applications in Laravel and managing AWS cloud infrastructure.">
     <meta name="theme-color" content="#ffffff">
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('icon.svg') }}">
