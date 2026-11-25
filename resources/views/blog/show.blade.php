@@ -1,4 +1,10 @@
-<x-layouts.app :title="$post->title . ' — Muhammad Ahmed'" :description="$post->excerpt">
+<x-layouts.app :title="$post->title . ' — Muhammad Ahmed'" :description="$post->excerpt ?: null" type="article">
+
+    @push('head')
+        @if($post->published_at)
+            <meta property="article:published_time" content="{{ $post->published_at->toIso8601String() }}">
+        @endif
+    @endpush
 
     <article class="max-w-3xl mx-auto px-6 pt-32 pb-12">
         <a href="/blog" class="inline-flex items-center gap-1 text-sm text-stone-400 hover:text-stone-900 transition-colors mb-8">

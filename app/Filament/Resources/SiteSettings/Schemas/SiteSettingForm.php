@@ -31,6 +31,7 @@ class SiteSettingForm
                 Textarea::make('value')
                     ->label('Value')
                     ->rows(3)
+                    ->autosize()
                     ->visible(fn (Get $get) => $get('type') !== 'boolean')
                     ->helperText('Leave empty to hide the element that uses it.')
                     ->columnSpanFull(),

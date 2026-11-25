@@ -4,29 +4,15 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-use App\Models\{Project, WorkExperience, Skill, Certification, SiteSetting};
+use App\Models\{Project, WorkExperience, Skill, Certification};
 
 class PortfolioSeeder extends Seeder
 {
     public function run(): void
     {
         // ── Site settings ─────────────────────────────────────────────────────
-        $settings = [
-            ['key' => 'hero_name',      'value' => 'Muhammad Ahmed'],
-            ['key' => 'hero_title',     'value' => 'Software Engineer · Laravel & AWS'],
-            ['key' => 'hero_tagline',   'value' => '5+ years building full-stack web applications — trading LMS platforms, multi-vendor e-commerce, live sports feeds, and AI-powered tools. Focused on Laravel, Livewire & AWS cloud infrastructure.'],
-            // Hero badges: set to '0' / '' to hide, non-empty to show.
-            ['key' => 'open_to_work',   'value' => '0',    'type' => 'boolean'],
-            ['key' => 'currently_building', 'value' => ''],
-            ['key' => 'github_url',     'value' => 'https://github.com/masix04'],
-            ['key' => 'linkedin_url',   'value' => 'https://www.linkedin.com/in/muhammad-ahmed-61b21b163/'],
-            ['key' => 'email',          'value' => 'muhammadahmed5867@gmail.com'],
-            ['key' => 'phone',          'value' => '+92 332 8426292'],
-            ['key' => 'location',       'value' => 'Lahore, Pakistan'],
-        ];
-        foreach ($settings as $s) {
-            SiteSetting::updateOrCreate(['key' => $s['key']], $s);
-        }
+        // Adds only missing keys, so edits made in the admin panel are kept.
+        $this->call(SiteSettingsSeeder::class);
 
         // ── Work experience ───────────────────────────────────────────────────
         WorkExperience::truncate();

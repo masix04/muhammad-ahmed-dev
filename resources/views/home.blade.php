@@ -1,8 +1,37 @@
 @php
     use App\Models\SiteSetting;
+
+    $name      = SiteSetting::get('hero_name', 'Muhammad Ahmed');
+    $github    = SiteSetting::get('github_url');
+    $linkedin  = SiteSetting::get('linkedin_url');
+    $email     = SiteSetting::get('email');
+    $phone     = SiteSetting::get('phone');
+    $location  = SiteSetting::get('location', 'Lahore, Pakistan');
+    $cvUrl     = SiteSetting::url('cv_url');
+    $stats     = SiteSetting::pairs('hero_stats');
+    $about     = array_filter(preg_split('/\R{2,}/', trim((string) SiteSetting::get('about_text'))));
+    $photo     = SiteSetting::url('profile_photo');
+
+    // "https://www.linkedin.com/in/x/" → "linkedin.com/in/x"
+    $display = fn (?string $url) => preg_replace('#^https?://(www\.)?#i', '', rtrim((string) $url, '/'));
+
+    $personSchema = array_filter([
+        '@context'   => 'https://schema.org',
+        '@type'      => 'Person',
+        'name'       => $name,
+        'jobTitle'   => SiteSetting::get('hero_title'),
+        'url'        => url('/'),
+        'image'      => $photo,
+        'sameAs'     => array_values(array_filter([$github, $linkedin])),
+        'address'    => $location ? ['@type' => 'PostalAddress', 'addressLocality' => $location] : null,
+    ]);
 @endphp
 
 <x-layouts.app>
+
+    @push('head')
+        <script type="application/ld+json">{!! json_encode($personSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) !!}</script>
+    @endpush
 
     {{-- ══════════════════════════════════════════════════════════════ --}}
     {{-- HERO SECTION                                                    --}}
@@ -36,9 +65,10 @@
                         {{ SiteSetting::get('hero_title', 'Software Engineer · Laravel & AWS') }}
                     </p>
 
+                    @php [$firstName, $lastName] = array_pad(explode(' ', $name, 2), 2, ''); @endphp
                     <h1 class="font-serif text-6xl md:text-7xl leading-none text-stone-900">
-                        Muhammad<br>
-                        <em class="not-italic text-violet-600">Ahmed</em>
+                        {{ $firstName }}<br>
+                        <em class="not-italic text-violet-600">{{ $lastName }}</em>
                     </h1>
                 </div>
 
@@ -53,19 +83,16 @@
                     </div>
                 @endif
 
-                <div class="flex gap-8 pt-2">
-                    @foreach([
-                        ['5+','Years'],
-                        ['10+','Projects'],
-                        ['25k+','Notifications'],
-                        ['1+','Production Apps']
-                    ] as [$n,$l])
-                        <div>
-                            <div class="font-serif text-2xl text-stone-900">{{ $n }}</div>
-                            <div class="text-xs text-stone-400 mt-0.5">{{ $l }}</div>
-                        </div>
-                    @endforeach
-                </div>
+                @if($stats)
+                    <div class="flex flex-wrap gap-x-8 gap-y-4 pt-2">
+                        @foreach($stats as [$n, $l])
+                            <div>
+                                <div class="font-serif text-2xl text-stone-900">{{ $n }}</div>
+                                <div class="text-xs text-stone-400 mt-0.5">{{ $l }}</div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
 
                 <div class="flex flex-wrap gap-3 pt-2">
                     <a href="#projects"
@@ -73,17 +100,26 @@
                         View Projects
                     </a>
 
-                    <a href="https://github.com/masix04"
-                    target="_blank"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 border border-violet-200 text-violet-700 rounded-full hover:bg-violet-50">
-                        GitHub
-                    </a>
+                    @if($cvUrl)
+                        <a href="{{ $cvUrl }}" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 border border-stone-200 text-stone-700 text-sm rounded-full hover:bg-stone-50">
+                            Download CV
+                        </a>
+                    @endif
 
-                    <a href="https://www.linkedin.com/in/muhammad-ahmed-61b21b163/"
-                    target="_blank"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 border border-emerald-200 text-emerald-700 rounded-full hover:bg-emerald-50">
-                        LinkedIn
-                    </a>
+                    @if($github)
+                        <a href="{{ $github }}" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 border border-violet-200 text-violet-700 rounded-full hover:bg-violet-50">
+                            GitHub
+                        </a>
+                    @endif
+
+                    @if($linkedin)
+                        <a href="{{ $linkedin }}" target="_blank" rel="noopener"
+                        class="inline-flex items-center gap-2 px-5 py-2.5 border border-emerald-200 text-emerald-700 rounded-full hover:bg-emerald-50">
+                            LinkedIn
+                        </a>
+                    @endif
                 </div>
 
             </div>
@@ -130,6 +166,43 @@
         </div>
 
     </section>
+
+    {{-- ══════════════════════════════════════════════════════════════ --}}
+    {{-- ABOUT                                                           --}}
+    {{-- ══════════════════════════════════════════════════════════════ --}}
+    @if($about)
+        <section id="about" class="max-w-6xl mx-auto px-6 py-12">
+            <div class="grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16 items-start">
+                <div>
+                    <p class="text-xs tracking-widest text-stone-400 uppercase mb-2">About</p>
+                    <h2 class="font-serif text-4xl text-stone-900">A bit about me</h2>
+
+                    @if($photo)
+                        <img src="{{ $photo }}" alt="Photo of {{ $name }}" loading="lazy"
+                             class="mt-8 w-48 h-48 md:w-full md:max-w-[16rem] aspect-square object-cover rounded-2xl">
+                    @endif
+                </div>
+
+                <div class="space-y-5 text-stone-600 font-light leading-relaxed">
+                    @foreach($about as $paragraph)
+                        <p>{{ $paragraph }}</p>
+                    @endforeach
+
+                    @if($location || $cvUrl)
+                        <div class="flex flex-wrap items-center gap-x-6 gap-y-3 pt-2 text-sm">
+                            @if($location)
+                                <span class="text-stone-400">📍 {{ $location }}</span>
+                            @endif
+                            @if($cvUrl)
+                                <a href="{{ $cvUrl }}" target="_blank" rel="noopener"
+                                   class="text-violet-700 hover:text-violet-900 transition-colors">Download my CV →</a>
+                            @endif
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </section>
+    @endif
 
     {{-- ══════════════════════════════════════════════════════════════ --}}
     {{-- PROJECTS                                                        --}}
@@ -206,21 +279,29 @@
                 <h2 class="font-serif text-4xl text-white mb-6">Let's work together.</h2>
                 <p class="text-stone-400 font-light leading-relaxed mb-8">
                     Open to full-time roles, freelance contracts, and interesting side projects.
-                    Based in Lahore — available remotely worldwide.
+                    @if($location) Based in {{ $location }} — @endif available remotely worldwide.
                 </p>
                 <div class="space-y-3 text-sm text-stone-400">
-                    <a href="mailto:muhammadahmed5867@gmail.com" class="flex items-center gap-3 hover:text-white transition-colors">
-                        <span class="text-stone-600">✉</span> muhammadahmed5867@gmail.com
-                    </a>
-                    <a href="tel:+923328426292" class="flex items-center gap-3 hover:text-white transition-colors">
-                        <span class="text-stone-600">☎</span> +92 332 8426292
-                    </a>
-                    <a href="https://www.linkedin.com/in/muhammad-ahmed-61b21b163/" target="_blank" class="flex items-center gap-3 hover:text-white transition-colors">
-                        <span class="text-stone-600">in</span> linkedin.com/in/muhammad-ahmed
-                    </a>
-                    <a href="https://github.com/masix04" target="_blank" class="flex items-center gap-3 hover:text-white transition-colors">
-                        <span class="text-stone-600">⌥</span> github.com/masix04
-                    </a>
+                    @if($email)
+                        <a href="mailto:{{ $email }}" class="flex items-center gap-3 hover:text-white transition-colors">
+                            <span class="text-stone-600">✉</span> {{ $email }}
+                        </a>
+                    @endif
+                    @if($phone)
+                        <a href="tel:{{ preg_replace('/[^\d+]/', '', $phone) }}" class="flex items-center gap-3 hover:text-white transition-colors">
+                            <span class="text-stone-600">☎</span> {{ $phone }}
+                        </a>
+                    @endif
+                    @if($linkedin)
+                        <a href="{{ $linkedin }}" target="_blank" rel="noopener" class="flex items-center gap-3 hover:text-white transition-colors">
+                            <span class="text-stone-600">in</span> {{ $display($linkedin) }}
+                        </a>
+                    @endif
+                    @if($github)
+                        <a href="{{ $github }}" target="_blank" rel="noopener" class="flex items-center gap-3 hover:text-white transition-colors">
+                            <span class="text-stone-600">⌥</span> {{ $display($github) }}
+                        </a>
+                    @endif
                 </div>
             </div>
             <div>
