@@ -236,3 +236,18 @@ html {
 .workspace-card.dim{
     opacity:.35;
 }
+/* ── Blog post body (rich-editor HTML) ────────────────────────────────────── */
+.post-body { color: var(--color-stone-700); line-height: 1.8; font-weight: 300; }
+.post-body > * + * { margin-top: 1.25rem; }
+.post-body h2 { font-family: var(--font-serif); font-size: 1.75rem; color: var(--color-stone-900); margin-top: 2.5rem; }
+.post-body h3 { font-family: var(--font-serif); font-size: 1.35rem; color: var(--color-stone-900); margin-top: 2rem; }
+.post-body a { color: var(--color-violet-600); text-decoration: underline; text-decoration-color: var(--color-violet-200); }
+.post-body strong { font-weight: 500; color: var(--color-stone-900); }
+.post-body ul { list-style: disc; padding-left: 1.5rem; }
+.post-body ol { list-style: decimal; padding-left: 1.5rem; }
+.post-body li + li { margin-top: 0.4rem; }
+.post-body blockquote { border-left: 3px solid var(--color-stone-200); padding-left: 1rem; color: var(--color-stone-500); font-style: italic; }
+.post-body code { background: var(--color-stone-100); padding: 0.1rem 0.35rem; border-radius: 0.3rem; font-size: 0.875em; }
+.post-body pre { background: var(--color-stone-900); color: var(--color-stone-100); padding: 1rem 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.85rem; }
+.post-body pre code { background: none; padding: 0; color: inherit; }
+.post-body img { border-radius: 0.75rem; max-width: 100%; height: auto; }

@@ -14,10 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Force HTTPS for all generated URLs and assets
-        if (env(key: 'APP_ENV') === 'local' && request()->server(key: 'HTTP_X_FORWARDED_PROTO') === 'https') {
-            URL::forceScheme(scheme: 'https');
-        }
+        //
     }
 
     /**
@@ -34,8 +31,12 @@ class AppServiceProvider extends ServiceProvider
             $view->with('featuredProjects', $featuredProjects);
         });
 
-        // Force HTTPS if running in production (like on Render)
-        if (config('app.env') === 'production' || app()->environment('production')) {
+        // Force HTTPS in production (like on Render), and when a local tunnel
+        // (e.g. ngrok) forwards the request over HTTPS.
+        if (
+            app()->environment('production')
+            || (app()->environment('local') && request()->server('HTTP_X_FORWARDED_PROTO') === 'https')
+        ) {
             URL::forceScheme('https');
         }
     }

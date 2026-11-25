@@ -1,12 +1,12 @@
 {{-- FILE: resources/views/layouts/app.blade.php --}}
 {{-- Livewire v4: @livewireStyles and @livewireScripts are still valid --}}
 <!DOCTYPE html>
-<html lang="en" x-data="{ scrolled: false }" @scroll.window="scrolled = window.scrollY > 40">
+<html lang="en" x-data="{ scrolled: false, menuOpen: false }" @scroll.window="scrolled = window.scrollY > 40" @keydown.escape.window="menuOpen = false">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Muhammad Ahmed — Laravel Developer' }}</title>
-    <meta name="description" content="Software Engineer with 5+ years of experience building full-stack web applications in Laravel and managing AWS cloud infrastructure.">
+    <meta name="description" content="{{ $description ?? 'Software Engineer with 5+ years of experience building full-stack web applications in Laravel and managing AWS cloud infrastructure.' }}">
     <meta name="theme-color" content="#ffffff">
 
     <link rel="icon" type="image/svg+xml" href="{{ asset('icon.svg') }}">
@@ -20,7 +20,7 @@
     {{-- ── NAVBAR ──────────────────────────────────────────────────────── --}}
     <nav
         class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
-        :class="scrolled
+        :class="(scrolled || menuOpen)
             ? 'bg-white/90 backdrop-blur-md border-b border-stone-100 shadow-sm'
             : 'bg-transparent'"
     >
@@ -37,13 +37,31 @@
             </a>
 
             <div class="hidden md:flex items-center gap-8 text-sm font-light text-stone-500">
-                <a href="#projects"       class="hover:text-stone-900 transition-colors">Projects</a>
-                <a href="#experience"     class="hover:text-stone-900 transition-colors">Experience</a>
-                <a href="#skills"         class="hover:text-stone-900 transition-colors">Skills</a>
-                <a href="#certifications" class="hover:text-stone-900 transition-colors">Learning</a>
-                <a href="#blog"           class="hover:text-stone-900 transition-colors">Blog</a>
-                <a href="#contact"        class="hover:text-stone-900 transition-colors">Contact</a>
+                {{-- "/#…" so the links also work from the blog pages --}}
+                <a href="/#projects"       class="hover:text-stone-900 transition-colors">Projects</a>
+                <a href="/#experience"     class="hover:text-stone-900 transition-colors">Experience</a>
+                <a href="/#skills"         class="hover:text-stone-900 transition-colors">Skills</a>
+                <a href="/#certifications" class="hover:text-stone-900 transition-colors">Learning</a>
+                <a href="/#blog"           class="hover:text-stone-900 transition-colors">Blog</a>
+                <a href="/#contact"        class="hover:text-stone-900 transition-colors">Contact</a>
             </div>
+
+            {{-- Mobile menu button --}}
+            <button
+                type="button"
+                class="md:hidden p-2 -mr-2 text-stone-600"
+                @click="menuOpen = !menuOpen"
+                :aria-expanded="menuOpen.toString()"
+                aria-controls="mobile-menu"
+                aria-label="Toggle menu"
+            >
+                <svg x-show="!menuOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7h16M4 12h16M4 17h16"/>
+                </svg>
+                <svg x-show="menuOpen" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 6l12 12M18 6L6 18"/>
+                </svg>
+            </button>
 
             {{--<a
                 href="{{ asset('storage/cv/muhammad-ahmed-cv.pdf') }}"
@@ -55,6 +73,24 @@
                 </svg>
                 Download CV
             </a>--}}
+        </div>
+
+        {{-- Mobile menu panel --}}
+        <div id="mobile-menu" x-show="menuOpen" x-cloak x-transition.opacity
+             class="md:hidden bg-white/95 backdrop-blur-md border-b border-stone-100">
+            <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col text-sm text-stone-600">
+                @foreach([
+                    '/#projects' => 'Projects',
+                    '/#experience' => 'Experience',
+                    '/#skills' => 'Skills',
+                    '/#certifications' => 'Learning',
+                    '/#blog' => 'Blog',
+                    '/#contact' => 'Contact',
+                ] as $href => $label)
+                    <a href="{{ $href }}" @click="menuOpen = false"
+                       class="py-3 border-b border-stone-100 last:border-0 hover:text-stone-900 transition-colors">{{ $label }}</a>
+                @endforeach
+            </div>
         </div>
     </nav>
 

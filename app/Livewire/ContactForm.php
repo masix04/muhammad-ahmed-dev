@@ -6,7 +6,11 @@ use Livewire\Component;
 use Livewire\Attributes\Validate;
 // Livewire v4 uses Validate, NOT Rule
 
+use Illuminate\Support\Facades\Mail;
+
+use App\Mail\ContactMessageReceived;
 use App\Models\ContactMessage;
+use App\Models\SiteSetting;
 
 class ContactForm extends Component
 {
@@ -30,7 +34,7 @@ class ContactForm extends Component
         $this->validate();
         $this->sending = true;
 
-        ContactMessage::create([
+        $contactMessage = ContactMessage::create([
             'name'       => $this->name,
             'email'      => $this->email,
             'subject'    => $this->subject ?: null,
@@ -38,9 +42,31 @@ class ContactForm extends Component
             'ip_address' => request()->ip(),
         ]);
 
+        $this->notify($contactMessage);
+
         $this->reset(['name', 'email', 'subject', 'message']);
         $this->sending   = false;
         $this->submitted = true;
+    }
+
+    /**
+     * Email the enquiry so it survives a redeploy, which wipes the database.
+     * The row is already saved, so a mail outage must not fail the submission —
+     * log it and let the sender see their success state.
+     */
+    private function notify(ContactMessage $contactMessage): void
+    {
+        $recipient = SiteSetting::get('email') ?: config('mail.from.address');
+
+        if (! $recipient) {
+            return;
+        }
+
+        try {
+            Mail::to($recipient)->send(new ContactMessageReceived($contactMessage));
+        } catch (\Throwable $e) {
+            report($e);
+        }
     }
 
     public function render()
