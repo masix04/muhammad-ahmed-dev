@@ -204,6 +204,9 @@
                             <span class="text-xs text-violet-400 uppercase tracking-widest">{{ $openProject->category }}</span>
                         @endif
                         <h2 id="project-modal-title" class="font-serif text-3xl text-violet-900 mt-1 leading-tight">{{ $openProject->title }}</h2>
+                        @if($openProject->my_role)
+                            <p class="text-xs text-stone-400 mt-2">My role: <span class="text-stone-600">{{ $openProject->my_role }}</span></p>
+                        @endif
                     </div>
                     <div class="flex gap-2 flex-shrink-0">
                         @if($openProject->github_url)
@@ -222,6 +225,24 @@
                         @endif
                     </div>
                 </div>
+
+                @php
+                    $caseStudy = array_filter([
+                        'The problem'  => $openProject->challenge,
+                        'What I built' => $openProject->solution,
+                        'The result'   => $openProject->outcome,
+                    ]);
+                @endphp
+                @if($caseStudy)
+                    <dl class="mb-8 space-y-5">
+                        @foreach($caseStudy as $label => $text)
+                            <div class="pl-4 border-l-2 border-violet-200">
+                                <dt class="text-xs uppercase tracking-widest text-violet-400 mb-1">{{ $label }}</dt>
+                                <dd class="text-sm text-stone-600 font-light leading-relaxed whitespace-pre-line">{{ $text }}</dd>
+                            </div>
+                        @endforeach
+                    </dl>
+                @endif
 
                 <div class="post-body text-sm mb-6">
                     {!! $openProject->full_description ?? '<p>' . e($openProject->short_description) . '</p>' !!}

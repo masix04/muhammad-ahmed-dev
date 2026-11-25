@@ -42,6 +42,47 @@ class ProjectsAndSeedingTest extends TestCase
             ->assertDontSeeHtml('role="dialog"');
     }
 
+    public function test_case_study_shows_in_the_popup_only_for_the_parts_that_are_filled(): void
+    {
+        $project = $this->project([
+            'my_role'   => 'Backend developer in a team of 4',
+            'challenge' => 'Schools had no single place for timetables.',
+            'solution'  => 'A Laravel API plus a Livewire dashboard.',
+            // no outcome on purpose: nothing should be invented for it
+        ]);
+
+        Livewire::test(ProjectsGrid::class)
+            ->call('openModal', $project->id)
+            ->assertSee('My role:')
+            ->assertSee('Backend developer in a team of 4')
+            ->assertSee('The problem')
+            ->assertSee('Schools had no single place for timetables.')
+            ->assertSee('What I built')
+            ->assertDontSee('The result');
+    }
+
+    public function test_popup_without_case_study_fields_has_no_empty_boxes(): void
+    {
+        $project = $this->project();
+
+        Livewire::test(ProjectsGrid::class)
+            ->call('openModal', $project->id)
+            ->assertSee('A marketplace.')
+            ->assertDontSee('My role:')
+            ->assertDontSee('The problem')
+            ->assertDontSee('What I built');
+    }
+
+    public function test_case_study_text_is_escaped(): void
+    {
+        $project = $this->project(['challenge' => '<script>alert(1)</script>']);
+
+        Livewire::test(ProjectsGrid::class)
+            ->call('openModal', $project->id)
+            ->assertDontSeeHtml('<script>alert(1)</script>')
+            ->assertSee('&lt;script&gt;alert(1)&lt;/script&gt;', false);
+    }
+
     public function test_unpublished_projects_are_hidden(): void
     {
         $this->project(['title' => 'Secret project', 'slug' => 'secret', 'is_published' => false]);

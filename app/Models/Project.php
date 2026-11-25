@@ -20,6 +20,10 @@ class Project extends Model
         'is_published',
         'sort_order',
         'category',
+        'my_role',
+        'challenge',
+        'solution',
+        'outcome',
     ];
 
     protected $casts = [

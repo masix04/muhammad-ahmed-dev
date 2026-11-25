@@ -55,6 +55,39 @@ class ProjectForm
                 ])
                 ->columns(2),
 
+            Section::make('Case study')
+                ->description('Optional. Shown at the top of the project popup. Each box is hidden while empty. Plain text; a blank line starts a new paragraph.')
+                ->collapsible()
+                ->schema([
+
+                    TextInput::make('my_role')
+                        ->label('My role')
+                        ->placeholder('e.g. Backend developer in a team of 4')
+                        ->columnSpanFull(),
+
+                    Textarea::make('challenge')
+                        ->label('The problem')
+                        ->helperText('What was hard or missing? Who was it for?')
+                        ->rows(3)
+                        ->autosize()
+                        ->columnSpanFull(),
+
+                    Textarea::make('solution')
+                        ->label('What I built')
+                        ->helperText('The decisions you made and why, not just the tech list.')
+                        ->rows(3)
+                        ->autosize()
+                        ->columnSpanFull(),
+
+                    Textarea::make('outcome')
+                        ->label('The result')
+                        ->helperText('Real numbers or outcomes only (users, speed, time saved, launch). Leave empty if you have none.')
+                        ->rows(3)
+                        ->autosize()
+                        ->columnSpanFull(),
+
+                ]),
+
             Section::make('Media')
                 ->schema([
 

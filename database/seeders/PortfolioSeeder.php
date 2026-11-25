@@ -106,6 +106,7 @@ class PortfolioSeeder extends Seeder
         $projects = [
             [
                 'title' => 'Forex/Kleos/ILMU', 'slug' => 'forex-kleos-ilmu', 'category' => 'LMS',
+                'my_role' => 'Backend Developer at RoboEyeTech',
                 'short_description' => 'Educational trading and LMS platform for traders, educators, and students with live webinar streaming via OBS/MUX and real-time market data.',
                 'full_description'  => '<p>A comprehensive learning management system built for the trading education space. Features include role-based dashboards for educators and students, structured learning modules, live webinar streaming integration using OBS and MUX, and real-time Forex market data from FMP.</p><h3>Key features</h3><ul><li>Role-based access control (admin, educator, student)</li><li>Live webinar streaming with OBS/MUX integration</li><li>Real-time Forex market data display</li><li>Firebase Cloud Messaging for push notifications</li><li>Responsive dashboards with Livewire reactivity</li></ul>',
                 'tech_tags' => ['Laravel','Livewire','MySQL','FCM','MUX','Nginx','PHP'],
@@ -114,6 +115,7 @@ class PortfolioSeeder extends Seeder
 
             [
                 'title' => 'Multi-Tenant E-commerce', 'slug' => 'multi-tenant-ecommerce', 'category' => 'E-commerce',
+                'my_role' => 'Freelance product developer',
                 'short_description' => 'Multi-vendor platform with per-seller storefronts, product variant systems, media galleries, and Stripe/COD/Cashmaal payment gateways.',
                 'full_description'  => '<p>A fully featured multi-tenant e-commerce solution where each seller gets their own customisable storefront within a shared Laravel infrastructure.</p><h3>Key features</h3><ul><li>Multi-tenant architecture with per-seller theming</li><li>Product variants (size, colour, etc.) with real-time pricing via Livewire</li><li>Payment gateway integrations: Stripe, COD, Cashmaal</li><li>Seller management dashboard in Filament</li><li>Media galleries with drag-and-drop uploads</li><li>AI-assisted development with Claude Code</li></ul>',
                 'tech_tags' => ['Laravel','Livewire','Alpine.js','Tailwind CSS','Stripe','MySQL','Filament'],
@@ -122,6 +124,7 @@ class PortfolioSeeder extends Seeder
 
             [
                 'title' => 'TeachersLink School LMS', 'slug' => 'teacherslink', 'category' => 'LMS',
+                'my_role' => 'Backend Developer in a 4-member team at RoboEyeTech',
                 'short_description' => 'School management and LMS for students, teachers and parents with timetable scheduling, RESTful APIs for mobile, and FCM notifications.',
                 'full_description'  => '<p>Built as part of a 4-member team at RoboEyeTech, TeachersLink serves schools across web and mobile platforms.</p><h3>Key features</h3><ul><li>Timetable and calendar scheduling system</li><li>Student progress and attendance tracking for parents</li><li>RESTful APIs consumed by iOS and Android apps</li><li>Push notifications via Firebase Cloud Messaging</li><li>Academic activity management for teachers</li></ul>',
                 'tech_tags' => ['Laravel','Livewire','MySQL','FCM','REST APIs'],
@@ -137,6 +140,7 @@ class PortfolioSeeder extends Seeder
 
             [
                 'title' => 'TeamTalk / SportScore', 'slug' => 'teamtalk-sportscore', 'category' => 'Sports',
+                'my_role' => 'Led a team of 3 developers at Sixlogics',
                 'short_description' => 'Live sports scoring platform with Socket.io real-time updates, transfer news, match notifications, and CMS for mobile app management.',
                 'tech_tags' => ['Laravel','MySQL','Socket.io','Echo','FCM','SonarQube','Nginx'],
                 'is_featured' => false, 'sort_order' => 5, 'top_class' => 'top-[72%]', 'left_class' => 'left-[70%]'
