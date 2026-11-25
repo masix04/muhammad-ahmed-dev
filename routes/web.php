@@ -13,7 +13,7 @@ Route::get('/blog', function () {
 
 // Blog single post
 Route::get('/blog/{slug}', function (string $slug) {
-    $post = BlogPost::where('slug', $slug)->where('is_published', true)->firstOrFail();
+    $post = BlogPost::published()->where('slug', $slug)->firstOrFail();
     return view('blog.show', compact('post'));
 });
 

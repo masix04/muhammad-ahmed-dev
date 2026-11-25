@@ -5,6 +5,11 @@
             class="bg-white border border-stone-200 rounded-xl p-4 flex flex-col gap-3 transition-all duration-150 hover:border-violet-300"
         >
 
+            @if($cert->certificate_image)
+                <img src="{{ Storage::url($cert->certificate_image) }}"
+                     alt="Certificate: {{ $cert->title }}" loading="lazy"
+                     class="w-full aspect-[4/3] object-cover rounded-lg border border-stone-100">
+            @else
             {{-- Icon --}}
             <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
                 <svg
@@ -21,6 +26,7 @@
                     />
                 </svg>
             </div>
+            @endif
 
             {{-- Content --}}
             <div class="flex-1">

@@ -24,9 +24,18 @@ class BlogPost extends Model
         'published_at' => 'datetime',
     ];
  
+    /**
+     * Public posts: switched on, and not dated in the future. A future
+     * published_at therefore schedules the post — it appears by itself once
+     * that moment passes, no job needed.
+     */
     public function scopePublished($query)
     {
-        return $query->where('is_published', true);
+        return $query
+            ->where('is_published', true)
+            ->where(function ($q) {
+                $q->whereNull('published_at')->orWhere('published_at', '<=', now());
+            });
     }
 
     public function scopeLatest3($query)

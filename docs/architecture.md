@@ -1,0 +1,140 @@
+# Architecture
+
+How the portfolio is put together, and why.
+
+## In one paragraph
+
+A **Laravel 13** app that renders one public page (the portfolio) and a small blog. The interactive parts of the page (project filter and popup, timeline, skills filter, contact form) are **Livewire** components. All content lives in a **SQLite** database and is edited in an admin panel built with **Filament**. There is no separate API and no JavaScript framework: the server renders HTML, Livewire swaps the changed parts, and Alpine.js handles small things like the mobile menu.
+
+## Stack
+
+| Layer | Tool | Used for |
+| --- | --- | --- |
+| Framework | Laravel 13 (PHP 8.3+) | Routing, models, mail, validation, rate limiting |
+| Interactive UI | Livewire 4 | Project grid and popup, timeline, skills, certifications, blog teaser, contact form |
+| Admin panel | Filament 5 | `/admin`: forms and tables for every kind of content |
+| Styling | Tailwind CSS 4 (via Vite) | All styling; no component library |
+| Small interactions | Alpine.js (bundled with Livewire) | Mobile menu, popup focus trap and Escape key |
+| Hero animation | Plain JavaScript (`resources/js/workspace-hero.js`) | CSS 3D tilt and float of the featured-project cards |
+| Database | SQLite | Content, settings, messages, sessions, cache |
+| Packaging | Docker | One image that builds the assets and serves the site |
+
+## How a page request works
+
+```mermaid
+flowchart LR
+    V[Visitor browser] -->|GET /| R[routes/web.php]
+    R --> H[home.blade.php]
+    C[View composer in AppServiceProvider] -->|featuredProjects| H
+    H --> L1[Livewire: ProjectsGrid]
+    H --> L2[Livewire: CareerTimeline]
+    H --> L3[Livewire: SkillsSection]
+    H --> L4[Livewire: CertificationsSection]
+    H --> L5[Livewire: BlogSection]
+    H --> L6[Livewire: ContactForm]
+    H --> S[(SiteSetting, loaded once per request)]
+    L1 & L2 & L3 & L4 & L5 & L6 --> DB[(SQLite)]
+    S --> DB
+```
+
+1. `GET /` renders `resources/views/home.blade.php` inside the layout `resources/views/components/layouts/app.blade.php` (navigation, SEO tags, footer).
+2. A **view composer** in [AppServiceProvider](../app/Providers/AppServiceProvider.php) hands the home view the latest 7 *featured* projects, which become the floating cards in the hero.
+3. Each section is a Livewire component that queries its own data. After the first load, clicking a filter or opening a project sends a small request to `/livewire/...` and only that section is redrawn.
+4. Text and links (name, tagline, stats, contact details, About text, CV link) come from **Site Settings**, not from the templates.
+
+### Routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | The portfolio page |
+| `/blog`, `/blog/{slug}` | Blog list (9 per page) and a single published post |
+| `/sitemap.xml`, `/robots.txt` | For search engines. `robots.txt` blocks `/admin` and points to the sitemap |
+| `/admin` | Filament admin panel (login only, no sign-up) |
+| `/up` | Health check, returns 200 when the app boots |
+
+## Data model
+
+The tables are independent: there are no foreign keys or relations between them.
+
+| Table | Model | Shown on the site as | Notes |
+| --- | --- | --- | --- |
+| `projects` | `Project` | Project cards, the popup, and the hero card stack | `is_published` hides it; `is_featured` puts it in the hero. Case-study fields: `my_role`, `challenge`, `solution`, `outcome` |
+| `work_experiences` | `WorkExperience` | The career timeline | Newest `start_date` first. `bullets` and `sub_projects` are JSON |
+| `skills` | `Skill` | Skills section, filterable by category | `is_visible` hides it; listed by category then `sort_order`. The `icon` and `proficiency` columns exist but are not used by the site or the admin form |
+| `certifications` | `Certification` | Certifications section | `is_visible` hides it |
+| `blog_posts` | `BlogPost` | `/blog`, plus the latest 3 on the home page | Public when `is_published` is on and `published_at` is empty or not in the future (so a future date schedules it) |
+| `contact_messages` | `ContactMessage` | Admin → Contact Messages only | Written by the contact form |
+| `site_settings` | `SiteSetting` | Text and links across the whole site | Key/value pairs, see the admin guide |
+| `users` | `User` | Admin logins | Created from the command line only |
+| `cache`, `jobs`, `sessions` | Laravel | Internal | Sessions and cache use the database driver |
+
+### Site Settings and the per-request cache
+
+`SiteSetting::get('key', 'default')` is called about 20 times per page. To avoid 20 queries, [SiteSetting](../app/Models/SiteSetting.php) loads *every* setting once per request and serves later reads from memory (a `scoped` binding registered in `AppServiceProvider`). Saving or deleting a setting clears that copy. Helpers:
+
+- `SiteSetting::url('cv_url')` returns a full URL, accepting either an absolute link or a path inside `public/`.
+- `SiteSetting::pairs('hero_stats')` parses `value | label` lines.
+
+## Where things live
+
+```
+app/
+  Filament/Resources/    One folder per admin screen: Resource, Schemas (form), Tables (list), Pages
+  Livewire/              One class per interactive section of the page
+  Mail/                  ContactMessageReceived (the email you receive)
+  Models/                Eloquent models; SiteSetting also holds the settings helpers
+  Providers/             AppServiceProvider (composer, HTTPS, settings cache), Filament panel config
+  Support/TechnologyColors.php   Colours for skill categories and tech tags
+config/skill-categories.php      Categories and which technology belongs to which colour
+database/
+  migrations/            Table definitions
+  seeders/               DatabaseSeeder, PortfolioSeeder (sample content), SiteSettingsSeeder (defaults)
+resources/
+  views/                 home, blog/, sitemap, mail/, components/layouts/app, livewire/*
+  css/app.css            Tailwind 4 setup, theme, hero cards, blog body styles
+  js/                    app.js (entry) and workspace-hero.js (hero animation)
+routes/web.php           The few public routes
+tests/Feature/           Automated tests (see below)
+docs/                    This documentation
+Dockerfile, docker-entrypoint.sh   Container build and start-up
+```
+
+## The contact form, step by step
+
+[ContactForm](../app/Livewire/ContactForm.php) is the only place visitors write data.
+
+1. Fields are checked when the visitor leaves each one, and again on send.
+2. If the hidden "website" field has text, it was filled by a bot: the form shows "Message sent" but **nothing is saved or emailed**.
+3. A visitor may send **3 messages per 10 minutes** (counted by IP address). More than that shows a friendly error.
+4. The message is saved to `contact_messages`.
+5. It is emailed to the `email` Site Setting (falling back to the mail "from" address). The email has a Reply-To of the sender. The email is sent immediately, not queued, because no queue worker runs. If the mail server is down the error is logged, and the visitor still sees success because the message is already saved.
+
+The IP-based limit relies on the app trusting the hosting platform's proxy headers (`trustProxies` in [bootstrap/app.php](../bootstrap/app.php)); otherwise every visitor would look like the proxy.
+
+## Admin access
+
+Filament refuses access outside `APP_ENV=local` unless the user model says it is allowed. [User](../app/Models/User.php) implements `FilamentUser` and returns `true`, which is safe because the panel has no registration page and users can only be created with `php artisan make:filament-user`. Anyone who exists in the `users` table is an admin.
+
+## Build pipeline
+
+- **Vite** compiles `resources/css/app.css` and `resources/js/app.js` into `public/build`. Tailwind 4 reads class names straight from the source files (no config file), so a class that appears nowhere in the code does not exist in the CSS.
+- The Docker image runs `npm run build` in a separate stage, so the final image carries only the compiled assets.
+
+## Security notes
+
+- Visitor text is always escaped when displayed. Rich-text fields written in the admin (blog body, project description) are printed as HTML, which is acceptable because only admins can write them.
+- Admin pages require login; there is no public registration.
+- Contact form: honeypot, rate limit, validation, and nothing is trusted from the browser.
+- HTTPS is forced in production, and for local tunnels that forward over HTTPS.
+- `target="_blank"` links carry `rel="noopener"`.
+
+## Tests
+
+`php artisan test` runs 40 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
+
+## Known limitations
+
+- **Hero card positions** are hand-picked only for the seeded projects (`top_class` / `left_class`, set by the seeder because the admin form has no fields for them). Any other featured project is placed automatically in a free spot from a fixed list of seven, by its order. If you want a particular spot for a new project, set those two columns to values that already exist in the compiled CSS (for example `top-[38%]`), since Tailwind builds only classes it can find in the code.
+- **Unused columns:** `skills.icon` and `skills.proficiency` stay in the database but nothing shows them, and the admin form no longer offers them. `work_experiences.sort_order` is saved, but the timeline orders by start date.
+- **SQLite on a container disk** is lost on redeploy unless a persistent disk is attached (see [deployment.md](deployment.md)).
+- `php artisan serve` is the web server inside the container, which is fine for a portfolio but not built for heavy traffic.

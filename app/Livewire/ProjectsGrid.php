@@ -51,16 +51,11 @@ class ProjectsGrid extends Component
             $query->whereJsonContains('tech_tags', $this->activeTag);
         }
 
-        $featuredProjects = Project::query()
-            ->where('is_featured', true)
-            ->latest()->take(7)->get();
-
         return view('livewire.projects-grid', [
             'projects'    => $query->get(),
             'openProject' => $this->openProjectId
                 ? Project::find($this->openProjectId)
                 : null,
-            'featuredProjects' => $featuredProjects,
         ]);
     }
 }

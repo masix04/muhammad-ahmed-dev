@@ -56,7 +56,8 @@ class BlogPostForm
 
                     Toggle::make('is_published'),
 
-                    DateTimePicker::make('published_at'),
+                    DateTimePicker::make('published_at')
+                        ->helperText('Sets the order and the date shown. A date in the future keeps the post hidden until then (it needs Published switched on).'),
                 ])
                 ->columns(2),
         ]);

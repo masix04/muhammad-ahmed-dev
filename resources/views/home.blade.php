@@ -133,8 +133,19 @@
                     <div id="workspace-inner"
                         class="relative w-full h-full transform-gpu">
 
-                        @foreach($featuredProjects as $project)
+                        @php
+                            // Spots for featured projects that have no saved position (for example
+                            // ones created in the admin panel): [top %, left %].
+                            $heroSlots = [[10, 55], [38, 8], [25, 65], [62, 40], [72, 70], [80, 15], [50, 30]];
+                        @endphp
+
+                        @foreach($featuredProjects as $i => $project)
+                            @php
+                                $hasPosition = $project->top_class && $project->left_class;
+                                [$slotTop, $slotLeft] = $heroSlots[$i % count($heroSlots)];
+                            @endphp
                             <div class="workspace-card absolute {{ $project->top_class }} {{ $project->left_class }}"
+                                @unless($hasPosition) style="top: {{ $slotTop }}%; left: {{ $slotLeft }}%" @endunless
                                 data-depth="">
 
                                 <h3>{{ $project->title }}</h3>

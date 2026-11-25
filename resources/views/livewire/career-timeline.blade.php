@@ -71,6 +71,13 @@
             @if(in_array($exp->id, $openItems))
                 <div class="mt-3 space-y-4">
 
+                    @if($exp->company_url)
+                        <a href="{{ $exp->company_url }}" target="_blank" rel="noopener"
+                           class="inline-flex items-center gap-1 text-xs text-violet-600 hover:text-violet-800 transition-colors">
+                            Visit {{ $exp->company }} ↗
+                        </a>
+                    @endif
+
                     {{-- Bullets --}}
                     @if($exp->bullets)
                         <ul class="space-y-1">

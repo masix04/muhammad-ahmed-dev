@@ -26,17 +26,6 @@ class SkillForm
                         ->all())
                     ->required(),
 
-                TextInput::make('icon')
-                    ->placeholder('brand-laravel')
-                    ->helperText('Heroicon name (without heroicon-o- prefix)'),
-
-                TextInput::make('proficiency')
-                    ->numeric()
-                    ->minValue(0)
-                    ->maxValue(100)
-                    ->default(80)
-                    ->suffix('%'),
-
                 TextInput::make('sort_order')
                     ->numeric()
                     ->default(0),

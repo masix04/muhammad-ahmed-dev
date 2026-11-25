@@ -29,7 +29,7 @@ class PortfolioSeeder extends Seeder
             'bullets'      => [
                 ['bullet' => 'Laravel development alongside end-to-end ownership of the cloud infrastructure'],
                 ['bullet' => 'Manage AWS infrastructure: Lightsail instance hosting, S3 buckets for media storage, and CloudFront CDN distribution'],
-                ['bullet' => 'Configured a site-to-site IPsec VPN using StrongSwan on the Lightsail instance to securely integrate a third-party partner’s APIs'],
+                ['bullet' => 'Configured a site-to-site IPsec VPN using StrongSwan on the Lightsail instance to provide secure private network connectivity to an external network'],
             ],
             'sub_projects' => null,
         ]);

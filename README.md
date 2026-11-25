@@ -18,6 +18,14 @@ Built with **Laravel 13**, **Livewire 4**, **Filament 5**, **Tailwind CSS 4** an
 
 Also included: share previews (Open Graph / Twitter tags), structured data for search engines, `/sitemap.xml`, `/robots.txt`, a mobile menu, and an optional "Download CV" button.
 
+## Documentation
+
+| Read this | If you want to know |
+| --- | --- |
+| [Admin guide](docs/admin-guide.md) | What the admin panel can do, and how to enter and change every kind of content |
+| [Architecture](docs/architecture.md) | How the app is built: stack, request flow, data model, contact form, security, known limitations |
+| [Running and deploying](docs/deployment.md) | Local setup, how the Docker image works, environment variables, keeping data between deploys |
+
 ## Running it locally
 
 You need PHP 8.3+, Composer, and Node 22+.

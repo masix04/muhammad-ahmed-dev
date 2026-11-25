@@ -21,7 +21,7 @@
     {{-- Skills Cloud --}}
     <div class="flex flex-wrap gap-2">
 
-        @foreach($this->filtered as $skill)
+        @foreach($filtered as $skill)
 
             <div class="inline-flex items-center gap-2 px-3 py-2 rounded-full
                     border border-stone-200 bg-white
