@@ -72,7 +72,6 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache
 
-RUN touch career-portfolio
 RUN chmod -R 777 storage bootstrap/cache database
 
 # === THE FIX: Copy the Composer binary from the vendor stage ===
@@ -87,7 +86,9 @@ RUN php artisan cache:clear || true
 
 EXPOSE 10000
 
-CMD sh -c "\
-php artisan migrate --force && \
-php artisan db:seed --force && \
-php artisan serve --host=0.0.0.0 --port=${PORT:-10000}"
+# php artisan serve handles one request at a time unless told otherwise.
+ENV PHP_CLI_SERVER_WORKERS=4
+
+# Prepares the database, then serves the site (see docker-entrypoint.sh).
+RUN chmod +x docker-entrypoint.sh
+CMD ["./docker-entrypoint.sh"]

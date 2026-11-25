@@ -109,10 +109,38 @@ export function initWorkspaceHero() {
 
         });
 
-        requestAnimationFrame(animate);
+        if (running) {
+            requestAnimationFrame(animate);
+        }
 
     }
 
-    animate(0);
+    // -------------------------
+    // Run only while visible
+    // -------------------------
+    // The hero is hidden on small screens and scrolls out of view on every
+    // screen, so don't spend CPU/battery animating it then. Visitors who ask
+    // for reduced motion get one still frame instead.
+
+    let running = false;
+
+    const reduceMotion =
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (reduceMotion || !('IntersectionObserver' in window)) {
+        animate(0);
+        return;
+    }
+
+    new IntersectionObserver(([entry]) => {
+
+        if (entry.isIntersecting && !running) {
+            running = true;
+            requestAnimationFrame(animate);
+        } else if (!entry.isIntersecting) {
+            running = false;
+        }
+
+    }).observe(workspace);
 
 }

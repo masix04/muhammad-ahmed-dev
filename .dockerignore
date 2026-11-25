@@ -7,3 +7,6 @@ storage/framework/cache
 storage/framework/sessions
 storage/framework/views
 .env
+# Never bake a local database into the image
+career-portfolio
+database/*.sqlite

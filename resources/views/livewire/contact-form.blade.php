@@ -14,10 +14,12 @@
         <form wire:submit="send" class="space-y-4">
             <div class="grid sm:grid-cols-2 gap-4">
                 <div>
-                    {{-- Livewire v4: wire:model.live (was wire:model.lazy or wire:model.defer in v3) --}}
+                    {{-- wire:model.blur: checks the field when you leave it, instead of sending a request on every keystroke --}}
                     <input
-                        wire:model.live="name"
+                        wire:model.blur="name"
                         type="text"
+                        aria-label="Your name"
+                        autocomplete="name"
                         placeholder="Your name"
                         class="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:border-stone-500 transition-colors"
                     >
@@ -25,8 +27,10 @@
                 </div>
                 <div>
                     <input
-                        wire:model.live="email"
+                        wire:model.blur="email"
                         type="email"
+                        aria-label="Your email"
+                        autocomplete="email"
                         placeholder="your@email.com"
                         class="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:border-stone-500 transition-colors"
                     >
@@ -36,8 +40,9 @@
 
             <div>
                 <input
-                    wire:model.live="subject"
+                    wire:model.blur="subject"
                     type="text"
+                    aria-label="Subject"
                     placeholder="Subject (optional)"
                     class="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:border-stone-500 transition-colors"
                 >
@@ -45,12 +50,20 @@
 
             <div>
                 <textarea
-                    wire:model.live="message"
+                    wire:model.blur="message"
                     rows="5"
+                    aria-label="Your message"
                     placeholder="Tell me about your project or opportunity…"
                     class="w-full px-4 py-3 bg-stone-800 border border-stone-700 rounded-xl text-white placeholder-stone-500 text-sm focus:outline-none focus:border-stone-500 transition-colors resize-none"
                 ></textarea>
                 @error('message') <p class="text-xs text-red-400 mt-1.5">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Honeypot: people never see or reach this field, bots fill it in --}}
+            <div class="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+                <label>Leave this field empty
+                    <input type="text" wire:model="website" tabindex="-1" autocomplete="off">
+                </label>
             </div>
 
             <button

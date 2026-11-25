@@ -139,7 +139,7 @@
     {{-- ── FOOTER ──────────────────────────────────────────────────────── --}}
     <footer class="border-t border-stone-100 py-10 mt-20">
         <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-stone-400">
-            <p>© {{ date('Y') }} {{ $siteName }}. Built with Laravel {{ app()->version() }}, Livewire & Three.js.</p>
+            <p>© {{ date('Y') }} {{ $siteName }}. Built with Laravel {{ app()->version() }}, Livewire & Alpine.js.</p>
             <div class="flex items-center gap-5">
                 @if($github = SiteSetting::get('github_url'))
                     <a href="{{ $github }}" target="_blank" rel="noopener" class="hover:text-stone-700 transition-colors">GitHub</a>

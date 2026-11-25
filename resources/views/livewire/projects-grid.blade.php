@@ -35,8 +35,12 @@
 
             <article
                 wire:click="openModal({{ $project->id }})"
+                wire:keydown.enter="openModal({{ $project->id }})"
+                tabindex="0"
+                role="button"
+                aria-label="View details: {{ $project->title }}"
                 class="group cursor-pointer bg-white border border-stone-200 rounded-xl overflow-hidden
-                    hover:border-violet-300 hover:shadow-sm transition-all duration-200"
+                    hover:border-violet-300 hover:shadow-sm focus-visible:outline-2 focus-visible:outline-violet-500 transition-all duration-200"
             >
                 {{-- Thumbnail --}}
                 <div class="aspect-video overflow-hidden relative bg-stone-100">
@@ -45,6 +49,7 @@
                         <img
                             src="{{ Storage::url($project->thumbnail) }}"
                             alt="{{ $project->title }}"
+                            loading="lazy"
                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         >
                     @else
@@ -148,8 +153,13 @@
     @endphp
     <div
         x-data
+        x-trap="true"
         x-init="$nextTick(() => document.body.classList.add('overflow-hidden'))"
         x-destroy="document.body.classList.remove('overflow-hidden')"
+        @keydown.escape.window="$wire.closeModal()"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-modal-title"
         class="fixed inset-0 z-50 flex items-start justify-center p-4 md:p-8 bg-black/40 backdrop-blur-sm overflow-y-auto"
         wire:click.self="closeModal"
     >
@@ -161,7 +171,9 @@
         >
             {{-- Close --}}
             <button
+                type="button"
                 wire:click="closeModal"
+                aria-label="Close project details"
                 class="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center bg-white/80 backdrop-blur rounded-full border border-stone-200 text-stone-400 hover:text-stone-800 transition-colors text-sm"
             >✕</button>
 
@@ -170,6 +182,8 @@
             <div class="aspect-video w-full bg-stone-900">
                 <iframe
                     src="{{ $openProject->youtube_embed }}"
+                    title="{{ $openProject->title }} demo video"
+                    loading="lazy"
                     class="w-full h-full"
                     frameborder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -178,7 +192,7 @@
             </div>
             @elseif($openProject->thumbnail)
             <div class="aspect-video w-full overflow-hidden">
-                <img src="{{ Storage::url($openProject->thumbnail) }}" alt="{{ $openProject->title }}" class="w-full h-full object-cover">
+                <img src="{{ Storage::url($openProject->thumbnail) }}" alt="{{ $openProject->title }}" loading="lazy" class="w-full h-full object-cover">
             </div>
             @endif
 
@@ -189,18 +203,18 @@
                         @if($openProject->category)
                             <span class="text-xs text-violet-400 uppercase tracking-widest">{{ $openProject->category }}</span>
                         @endif
-                        <h2 class="font-serif text-3xl text-violet-900 mt-1 leading-tight">{{ $openProject->title }}</h2>
+                        <h2 id="project-modal-title" class="font-serif text-3xl text-violet-900 mt-1 leading-tight">{{ $openProject->title }}</h2>
                     </div>
                     <div class="flex gap-2 flex-shrink-0">
                         @if($openProject->github_url)
-                            <a href="{{ $openProject->github_url }}" target="_blank"
+                            <a href="{{ $openProject->github_url }}" target="_blank" rel="noopener"
                                 class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 border border-stone-200 rounded-full hover:bg-stone-50 transition-colors text-stone-600">
                                 <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
                                 Code
                             </a>
                         @endif
                         @if($openProject->live_url)
-                            <a href="{{ $openProject->live_url }}" target="_blank"
+                            <a href="{{ $openProject->live_url }}" target="_blank" rel="noopener"
                                 class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 bg-violet-600 text-white rounded-full hover:bg-violet-700 transition-colors">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                                 Live site
@@ -209,7 +223,7 @@
                     </div>
                 </div>
 
-                <div class="prose prose-stone prose-sm max-w-none mb-6 font-light leading-relaxed">
+                <div class="post-body text-sm mb-6">
                     {!! $openProject->full_description ?? '<p>' . e($openProject->short_description) . '</p>' !!}
                 </div>
 

@@ -7,6 +7,7 @@ use Livewire\Attributes\Validate;
 // Livewire v4 uses Validate, NOT Rule
 
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 use App\Mail\ContactMessageReceived;
 use App\Models\ContactMessage;
@@ -26,12 +27,41 @@ class ContactForm extends Component
     #[Validate('required|min:20|max:2000')]
     public string $message = '';
 
+    // Honeypot: hidden from people, so only bots fill it in.
+    public string $website = '';
+
     public bool $submitted = false;
     public bool $sending   = false;
+
+    /** Messages allowed per visitor in the time window below. */
+    private const MAX_MESSAGES    = 3;
+    private const WINDOW_SECONDS  = 600;
 
     public function send(): void
     {
         $this->validate();
+
+        // A bot filled the hidden field. Act as if it worked so it learns nothing,
+        // but save nothing and send nothing.
+        if ($this->website !== '') {
+            $this->reset(['name', 'email', 'subject', 'message', 'website']);
+            $this->submitted = true;
+
+            return;
+        }
+
+        $limitKey = 'contact-form:' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($limitKey, self::MAX_MESSAGES)) {
+            $minutes = (int) ceil(RateLimiter::availableIn($limitKey) / 60);
+
+            $this->addError('message', "You've sent a few messages already. Please try again in {$minutes} minute(s), or email me directly.");
+
+            return;
+        }
+
+        RateLimiter::hit($limitKey, self::WINDOW_SECONDS);
+
         $this->sending = true;
 
         $contactMessage = ContactMessage::create([

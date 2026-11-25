@@ -1,29 +1,6 @@
-// import Alpine from 'alpinejs';
-
-import intersect from '@alpinejs/intersect';
-
+// Alpine and Livewire are loaded by @livewireScripts, so nothing to import here.
 import { initWorkspaceHero } from './workspace-hero';
 
-// import { initHeroThree } from './hero-three.js';
-
-// ── Alpine ────────────────────────────────────────────────────────────────
-// Alpine.plugin(intersect);
-// window.Alpine = Alpine;
-// Alpine.start();
-
-// ── Three.js hero ─────────────────────────────────────────────────────────
-// document.addEventListener('DOMContentLoaded', () => {
-//     initHeroThree('hero-canvas');
-// });
-
-// import { initTerminal } from './terminal';
-
-document.addEventListener(
-    'DOMContentLoaded',
-    () => {
-
-        // initTerminal();
-        initWorkspaceHero();
-
-    }
-);
+document.addEventListener('DOMContentLoaded', () => {
+    initWorkspaceHero();
+});
