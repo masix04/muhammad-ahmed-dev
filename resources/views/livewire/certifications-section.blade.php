@@ -1,22 +1,25 @@
-<div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
     @forelse($certifications as $cert)
 
         <div
-            class="bg-white border border-stone-200 rounded-xl p-4 flex flex-col gap-3 transition-all duration-150 hover:border-violet-300"
+            wire:key="cert-{{ $cert->id }}"
+            class="group relative bg-white border border-stone-200 rounded-3xl p-5 md:p-6 flex flex-col gap-4 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-500/10"
         >
+            <div class="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-violet-500 via-fuchsia-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
             @if($cert->certificate_image)
                 <img src="{{ Storage::url($cert->certificate_image) }}"
                      alt="Certificate: {{ $cert->title }}" loading="lazy"
-                     class="w-full aspect-[4/3] object-cover rounded-lg border border-stone-100">
+                     class="w-full aspect-[4/3] object-cover rounded-xl border border-stone-100">
             @else
             {{-- Icon --}}
-            <div class="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center flex-shrink-0">
+            <div class="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-600 transition-colors">
                 <svg
-                    class="w-4 h-4 text-violet-600"
+                    class="w-5 h-5 text-violet-600 group-hover:text-white transition-colors"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
                     <path
                         stroke-linecap="round"
@@ -31,22 +34,22 @@
             {{-- Content --}}
             <div class="flex-1">
 
-                <p class="text-sm font-medium text-stone-900 leading-snug">
+                <p class="font-serif text-xl text-stone-900 leading-snug">
                     {{ $cert->title }}
                 </p>
 
-                <p class="text-[11px] text-stone-500 mt-1">
+                <p class="text-sm text-stone-600 mt-1.5">
                     {{ $cert->issuer }}
                 </p>
 
                 @if($cert->issued_date)
-                    <p class="text-[10px] text-stone-400 mt-0.5">
+                    <p class="font-mono text-xs text-stone-400 mt-1">
                         {{ $cert->issued_date }}
                     </p>
                 @endif
 
                 @if($cert->description)
-                    <p class="text-[11px] text-stone-500 leading-relaxed mt-2">
+                    <p class="text-sm text-stone-500 leading-relaxed mt-3">
                         {{ $cert->description }}
                     </p>
                 @endif
@@ -58,23 +61,10 @@
                 <a
                     href="{{ $cert->verification_url }}"
                     target="_blank"
-                    class="inline-flex items-center gap-1 text-[11px] text-violet-600 hover:text-violet-700 transition-colors mt-auto"
+                    rel="noopener"
+                    class="inline-flex items-center gap-1 min-h-11 text-sm font-medium text-violet-600 hover:text-violet-800 transition-colors mt-auto"
                 >
-                    Verify Certificate
-
-                    <svg
-                        class="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                    </svg>
+                    Verify Certificate ↗
                 </a>
             @endif
 

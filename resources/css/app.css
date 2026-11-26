@@ -2,13 +2,14 @@
 @import "tailwindcss";
 
 /* ── Google Fonts ─────────────────────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap');
 
 /* ── Tailwind v4 theme configuration (replaces tailwind.config.js) ─────────── */
 @theme {
     /* Fonts */
     --font-sans:  'DM Sans', system-ui, sans-serif;
     --font-serif: 'Instrument Serif', Georgia, serif;
+    --font-mono:  'DM Mono', ui-monospace, 'SFMono-Regular', monospace;
 
     /* Brand colours (minimal stone palette) */
     --color-brand-50:  oklch(97% 0.005 60);
@@ -218,7 +219,7 @@ html {
 }
 
 .tags span{
-    font-size:10px;
+    font-size:12px;
     padding:4px 10px;
     border-radius:999px;
     background:#eeedfe;
@@ -251,3 +252,75 @@ html {
 .post-body pre { background: var(--color-stone-900); color: var(--color-stone-100); padding: 1rem 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.85rem; }
 .post-body pre code { background: none; padding: 0; color: inherit; }
 .post-body img { border-radius: 0.75rem; max-width: 100%; height: auto; }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DESIGN SYSTEM
+   Ink (stone-950) and paper, a violet to emerald signature gradient, serif
+   display type, mono labels, glass cards on dark sections.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* No sideways scrolling on phones, whatever happens inside a section, and a
+   fixed nav must not cover a section heading when you jump to it. */
+body { overflow-x: clip; }
+html { scroll-padding-top: 5rem; }
+
+/* ── Signature gradient text ──────────────────────────────────────────────── */
+.text-gradient {
+    background-image: linear-gradient(95deg, #a78bfa 0%, #e879f9 45%, #6ee7b7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ── Scroll reveal ────────────────────────────────────────────────────────── */
+/* Only hidden when JavaScript runs (the class "js" is set in the layout), so the
+   page is fully visible without it. Visitors who prefer reduced motion see
+   everything straight away. */
+.js .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .7s cubic-bezier(.16, 1, .3, 1), transform .7s cubic-bezier(.16, 1, .3, 1);
+    transition-delay: var(--delay, 0ms);
+}
+.js .reveal.is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    .js .reveal { opacity: 1; transform: none; transition: none; }
+    .marquee-track { animation: none !important; }
+    .card-in { animation: none !important; }
+}
+
+/* ── Cards entering the grid (inside Livewire sections) ───────────────────── */
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px) scale(.98); }
+    to   { opacity: 1; transform: none; }
+}
+.card-in { animation: cardIn .55s cubic-bezier(.16, 1, .3, 1) both; animation-delay: calc(var(--i, 0) * 60ms); }
+
+/* ── Technology marquee ───────────────────────────────────────────────────── */
+@keyframes marquee { to { transform: translateX(-50%); } }
+.marquee-track { display: flex; width: max-content; animation: marquee 45s linear infinite; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+
+/* ── Navigation logo on dark and light ────────────────────────────────────── */
+.logo-text { color: inherit; }
+.nav-dark .logo-text span { color: #c4b5fd; }
+
+/* ── Hero slider: glass cards on dark (laptop and up) ─────────────────────── */
+.workspace-card {
+    width: clamp(210px, 19vw, 260px);
+    padding: 1.1rem 1.2rem;
+    border-radius: 1.25rem;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .13);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .08);
+    backdrop-filter: blur(18px);
+}
+.workspace-card h3 { color: #fff; font-family: var(--font-serif); font-weight: 400; font-size: 1.3rem; line-height: 1.1; }
+.workspace-card p  { color: #a8a29e; font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-top: 8px; }
+.workspace-card .tags span { background: rgba(167, 139, 250, .14); color: #ddd6fe; border: 1px solid rgba(167, 139, 250, .28); }
+.workspace-card.active { box-shadow: 0 30px 100px rgba(124, 58, 237, .5), inset 0 1px 0 rgba(255, 255, 255, .15); border-color: rgba(196, 181, 253, .5); }
+
+/* ── Blog body ────────────────────────────────────────────────────────────── */
+.post-body { font-size: 1.0625rem; }

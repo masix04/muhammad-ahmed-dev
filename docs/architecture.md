@@ -15,7 +15,7 @@ A **Laravel 13** app that renders one public page (the portfolio) and a small bl
 | Admin panel | Filament 5 | `/admin`: forms and tables for every kind of content |
 | Styling | Tailwind CSS 4 (via Vite) | All styling; no component library |
 | Small interactions | Alpine.js (bundled with Livewire) | Mobile menu, popup focus trap and Escape key |
-| Hero animation | Plain JavaScript (`resources/js/workspace-hero.js`) | CSS 3D tilt and float of the featured-project cards |
+| Hero animation | Plain JavaScript (`resources/js/workspace-hero.js`) | CSS 3D tilt and float of the featured-project cards (laptop and up). Runs only while the hero is on screen, and not at all for visitors who prefer reduced motion |
 | Database | SQLite | Content, settings, messages, sessions, cache |
 | Packaging | Docker | One image that builds the assets and serves the site |
 
@@ -38,7 +38,7 @@ flowchart LR
 ```
 
 1. `GET /` renders `resources/views/home.blade.php` inside the layout `resources/views/components/layouts/app.blade.php` (navigation, SEO tags, footer).
-2. A **view composer** in [AppServiceProvider](../app/Providers/AppServiceProvider.php) hands the home view the latest 7 *featured* projects, which become the floating cards in the hero.
+2. A **view composer** in [AppServiceProvider](../app/Providers/AppServiceProvider.php) hands the home view the *featured and published* projects (up to 7, in the order set by `sort_order`), which become the **hero slider**, plus the names for the technology ticker. On laptops the slider is a stack of floating cards; on phones and tablets the same projects are a swipeable row of cards.
 3. Each section is a Livewire component that queries its own data. After the first load, clicking a filter or opening a project sends a small request to `/livewire/...` and only that section is redrawn.
 4. Text and links (name, tagline, stats, contact details, About text, CV link) come from **Site Settings**, not from the templates.
 
@@ -59,7 +59,7 @@ The tables are independent: there are no foreign keys or relations between them.
 | Table | Model | Shown on the site as | Notes |
 | --- | --- | --- | --- |
 | `projects` | `Project` | Project cards, the popup, and the hero card stack | `is_published` hides it; `is_featured` puts it in the hero. Case-study fields: `my_role`, `challenge`, `solution`, `outcome` |
-| `work_experiences` | `WorkExperience` | The career timeline | Newest `start_date` first. `bullets` and `sub_projects` are JSON |
+| `work_experiences` | `WorkExperience` | The career timeline | Newest `start_date` first. `bullets` and `sub_projects` are JSON. `additional_periods` (JSON) holds extra time periods for the same role; `allPeriods()` returns the main one first, then the extras |
 | `skills` | `Skill` | Skills section, filterable by category | `is_visible` hides it; listed by category then `sort_order`. The `icon` and `proficiency` columns exist but are not used by the site or the admin form |
 | `certifications` | `Certification` | Certifications section | `is_visible` hides it |
 | `blog_posts` | `BlogPost` | `/blog`, plus the latest 3 on the home page | Public when `is_published` is on and `published_at` is empty or not in the future (so a future date schedules it) |
@@ -88,11 +88,11 @@ app/
 config/skill-categories.php      Categories and which technology belongs to which colour
 database/
   migrations/            Table definitions
-  seeders/               DatabaseSeeder, PortfolioSeeder (sample content), SiteSettingsSeeder (defaults)
+  seeders/               DatabaseSeeder, PortfolioSeeder (sample content), ProjectsSeeder (sample projects, safe to re-run), SiteSettingsSeeder (defaults)
 resources/
   views/                 home, blog/, sitemap, mail/, components/layouts/app, livewire/*
-  css/app.css            Tailwind 4 setup, theme, hero cards, blog body styles
-  js/                    app.js (entry) and workspace-hero.js (hero animation)
+  css/app.css            Tailwind 4 setup, theme, design-system classes (gradient text, reveal, ticker, hero cards), blog body styles
+  js/                    app.js (entry, scroll reveal) and workspace-hero.js (hero animation)
 routes/web.php           The few public routes
 tests/Feature/           Automated tests (see below)
 docs/                    This documentation
@@ -115,6 +115,41 @@ The IP-based limit relies on the app trusting the hosting platform's proxy heade
 
 Filament refuses access outside `APP_ENV=local` unless the user model says it is allowed. [User](../app/Models/User.php) implements `FilamentUser` and returns `true`, which is safe because the panel has no registration page and users can only be created with `php artisan make:filament-user`. Anyone who exists in the `users` table is an admin.
 
+## Design system
+
+A dark, glowing hero and dark sections for Experience and Contact, with light "paper" sections between them, serif display type, small monospace labels and glass cards.
+
+| Piece | Where | What it does |
+| --- | --- | --- |
+| Colours | Tailwind classes in the views | Ink `stone-950` and paper `stone-50`/white, violet as the main accent, emerald as the second. The signature gradient (violet, pink, emerald) is the `.text-gradient` class and `from-violet-600 to-fuchsia-500` on buttons |
+| Type | `resources/css/app.css` | **Instrument Serif** for display text, **DM Sans** for body, **DM Mono** for labels. Sizes are deliberately modest: the page title tops out at about 5.5rem, section titles at 3rem |
+| Light/dark rhythm | `home.blade.php` | Dark: hero, Experience, Contact (and the footer). Light: About, Skills, Blog. Slightly grey: Projects, Certifications |
+| Section opener | `components/section-heading.blade.php` | `<x-section-heading number label title :dark>`: numbered mono label, title, optional subtitle |
+| Blog card | `components/blog-card.blade.php` | One card used on the home page and on `/blog` |
+| Gradient fallback | `app/Support/Gradient.php` | Projects and posts without an image get a stable gradient (the same title always gets the same one) with two-letter initials as a watermark |
+| Navigation | `components/layouts/app.blade.php` | A floating pill. It starts light-on-dark over a dark top and turns white once you scroll. Pages with a dark top pass `:hero-dark="true"` (home, blog list, blog post) |
+| Hero slider | `home.blade.php`, `workspace-hero.js` | Floating glass cards on laptops, a swipeable row on phones and tablets |
+| Technology ticker | view composer in `AppServiceProvider` | The scrolling strip under the hero shows the first 18 visible skills |
+| Scroll reveal | `resources/js/app.js` + `.reveal` in `app.css` | Elements with `reveal` fade up once as they scroll into view |
+
+### Phones and tablets
+
+- **Breakpoints.** The links in the top bar only appear from `lg` (laptops, 1024px and up). Phones and tablets get the menu button, so the bar never gets cramped.
+- **Tap targets.** Buttons and links are at least 40px tall on touch-size screens.
+- **Wide rows scroll instead of wrapping.** The project and skill filters are one swipeable row on phones and wrapping chips from `sm` up. The hero projects are a swipeable row below `lg`.
+- **The project popup** is a full-screen sheet on phones and a centred card from `sm` up.
+- **No sideways scrolling.** `body` clips horizontal overflow, and grid columns that hold a scrolling row use `minmax(0, 1fr)` so the row can never stretch the page.
+
+### Things to know when changing the design
+
+- **Reduced motion.** Visitors who ask their device for less motion get no scroll reveal, no ticker movement, no card entrance animation and a still hero. Keep any new animation behind `prefers-reduced-motion`.
+- **No JavaScript.** `.reveal` only hides content when the `js` class is present on `<html>` (a one-line script in the head sets it), so the page is fully readable without JavaScript.
+- **Livewire content.** Put `.reveal` only on static markup. Livewire redraws its own sections, which would reset the animation state. Cards inside Livewire components use the `card-in` entrance animation instead.
+- **Tailwind classes must be written out.** Tailwind builds only class names it can find as whole words in the code. `sm:grid-cols-{{ $n }}` produces nothing; write `[1 => 'sm:grid-cols-1', 2 => 'sm:grid-cols-2'][$n]` instead (the stats row and case-study grid do this).
+- **Blade evaluates component attributes more than once.** An attribute such as `:number="$counter()"` that changes a counter on every call gives wrong numbers. The section numbers use a plain lookup (`$num('projects')`) for that reason.
+- **A scrolling row inside a grid needs `minmax(0, 1fr)`.** Without it the grid column grows to fit the row and pushes the whole page wider than the screen.
+- **Check it visually.** Tests prove the markup is right, not that it looks right. Open the page at phone, tablet and laptop widths after a design change.
+
 ## Build pipeline
 
 - **Vite** compiles `resources/css/app.css` and `resources/js/app.js` into `public/build`. Tailwind 4 reads class names straight from the source files (no config file), so a class that appears nowhere in the code does not exist in the CSS.
@@ -130,7 +165,7 @@ Filament refuses access outside `APP_ENV=local` unless the user model says it is
 
 ## Tests
 
-`php artisan test` runs 40 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
+`php artisan test` runs 52 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
 
 ## Known limitations
 

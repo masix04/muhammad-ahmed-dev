@@ -48,11 +48,12 @@ Used for the project cards, the popup, and (when featured) the floating cards in
 | Demo video URL | A YouTube link | Popup video (replaces the image) |
 | GitHub URL, Live URL | Links | "Code" and "Live site" buttons |
 | Tech tags | Type and press Enter, e.g. `Laravel` | Tags on the card and the filter bar |
-| **Featured** | On or off | Shows the project as a floating card in the hero (latest 7 featured), placed automatically |
+| **Featured** | On or off | Puts the project in the **hero slider** (up to 7, in Sort order). It is a floating card on laptops and a swipeable card on phones and tablets. Unpublished projects never show |
 | **Published** | On or off | Off hides the project everywhere |
 | Sort order | Number, lower comes first | Order in the grid |
 
 Tips:
+- The sample data has nine projects. Five are **featured** and make up the hero slider: Forex/Kleos/ILMU, Multi-Tenant E-commerce, TeachersLink, Web Portal Platform and Stock Assistant. Daily Routine Log and the rest are listed in the Projects section only. The Web Portal Platform text is deliberately generic (no partner or company names), so keep any employer-related project that way.
 - Write the **result** only when you have a real outcome. Leaving it empty is better than guessing.
 - The filter bar is built automatically from every tag used by published projects, so keep tag spelling consistent (`Laravel`, not `laravel`).
 
@@ -64,6 +65,7 @@ The career timeline. The newest **start date** is shown first, and the most rece
 | --- | --- |
 | Role, Company, Location | As on a CV |
 | Period | Typed text shown to visitors, e.g. `Jun 2026 – Present` |
+| **More time periods** (collapsible) | Worked in this role (or for this company) in another period too? Use **Add another period** for each one, e.g. `Nov 2026 – Present`. They are shown on the timeline next to the main period, joined with a `+` |
 | Start date, End date, Is current | Used for ordering; leave End date empty for a current job |
 | Key responsibilities | One bullet per line (use "Add" for more) |
 | Sub-projects | Name, short description and tags for each project done in that role |

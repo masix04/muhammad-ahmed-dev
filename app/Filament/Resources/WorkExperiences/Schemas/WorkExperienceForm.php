@@ -50,6 +50,23 @@ class WorkExperienceForm
                 ])
                 ->columns(2),
 
+            Section::make('More time periods')
+                ->description('Did this role (or work for this company) in another period too? Add each extra period here. They are shown together with the main one on the timeline.')
+                ->collapsible()
+                ->schema([
+                    Repeater::make('additional_periods')
+                        ->label('Other periods')
+                        ->schema([
+                            TextInput::make('period')
+                                ->label('Period')
+                                ->placeholder('Nov 2026 – Present')
+                                ->required(),
+                        ])
+                        ->addActionLabel('Add another period')
+                        ->defaultItems(0)
+                        ->columnSpanFull(),
+                ]),
+
             Section::make('Key responsibilities')
                 ->schema([
                     Repeater::make('bullets')

@@ -71,7 +71,8 @@ Two commands to be careful with:
 | Command | Effect |
 | --- | --- |
 | `php artisan db:seed --class=SiteSettingsSeeder` | Safe. Adds missing settings only |
-| `php artisan db:seed --class=PortfolioSeeder` | **Destructive.** Empties projects, experience, skills and certifications, then reloads the sample data |
+| `php artisan db:seed --class=ProjectsSeeder` | Safe. Adds any sample project that is missing (matched by its slug) and never touches projects you already have or edited. Use it on an existing site to pick up newly added sample projects |
+| `php artisan db:seed --class=PortfolioSeeder` | **Destructive.** Empties projects, experience, skills and certifications, then reloads the sample data (projects come from `ProjectsSeeder`) |
 
 ## Environment variables to set on your host
 
@@ -103,7 +104,7 @@ Without a persistent disk, a redeploy brings back the sample content and loses e
 2. Set `DB_DATABASE=/var/data/portfolio.sqlite`. The start script creates the file there on first run.
 3. Keep uploads on the same disk, either by also mounting `storage/app/public` on persistent storage, or by moving uploads to S3.
 
-If your host has no persistent disk (some free tiers), treat the **seeders as the source of truth**: edit `database/seeders/PortfolioSeeder.php` and `SiteSettingsSeeder.php`, and redeploy. The admin panel is then only good for previewing until the next deploy.
+If your host has no persistent disk (some free tiers), treat the **seeders as the source of truth**: edit `database/seeders/ProjectsSeeder.php`, `PortfolioSeeder.php` and `SiteSettingsSeeder.php`, and redeploy. The admin panel is then only good for previewing until the next deploy.
 
 ## Hosting checklist
 
