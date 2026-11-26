@@ -29,7 +29,7 @@
         <h3 class="font-serif text-2xl leading-[1.1] text-stone-900 group-hover:text-violet-700 transition-colors">{{ $post->title }}</h3>
 
         @if($post->excerpt)
-            <p class="text-sm md:text-[15px] text-stone-600 mt-2 line-clamp-3 leading-relaxed">{{ $post->excerpt }}</p>
+            <p class="text-sm md:text-[.9375rem] text-stone-600 mt-2 line-clamp-3 leading-relaxed">{{ $post->excerpt }}</p>
         @endif
 
         <p class="font-mono text-xs text-stone-400 mt-auto pt-4">{{ $post->published_at?->format('M j, Y') }}</p>

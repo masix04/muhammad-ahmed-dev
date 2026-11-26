@@ -4,36 +4,50 @@
 @endphp
 
 <div>
-    {{-- Tag filter: one scrolling row on phones, wrapping chips from "sm" up --}}
-    <div class="flex gap-2 mb-8 overflow-x-auto sm:flex-wrap sm:overflow-visible -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 snap-x" role="group" aria-label="Filter projects by technology">
+    {{-- Tag filter: the most-used technologies first; the rest open with "more".
+         One swipeable row on phones until opened. --}}
+    @php
+        $shown      = 10; // chips visible before "more" ('All' counts as one)
+        $activeAt   = array_search($activeTag, $allTags, true);
+        $hiddenTags = max(count($allTags) - $shown, 0);
+    @endphp
+    <div x-data="{ all: @js($activeAt !== false && $activeAt >= $shown) }" class="mb-8">
+        <div class="flex gap-2 -mx-4 px-4 sm:mx-0 sm:px-0 pb-2 sm:pb-0 snap-x"
+             :class="all ? 'flex-wrap' : 'max-sm:overflow-x-auto sm:flex-wrap'"
+             role="group" aria-label="Filter projects by technology">
 
-        @foreach($allTags as $tag)
-            <button
-                type="button"
-                wire:click="filterBy(@js($tag))"
-                aria-pressed="{{ $activeTag === $tag ? 'true' : 'false' }}"
-                class="shrink-0 snap-start h-10 px-3.5 rounded-full text-[13px] border transition-all cursor-pointer hover:-translate-y-0.5
+            @foreach($allTags as $i => $tag)
+                @php $isActive = $activeTag === $tag; @endphp
+                <button
+                    type="button"
+                    wire:click="filterBy(@js($tag))"
+                    aria-pressed="{{ $isActive ? 'true' : 'false' }}"
+                    @if($i >= $shown) x-show="all" x-cloak @endif
+                    class="shrink-0 snap-start inline-flex items-center gap-2 h-10 pl-3.5 pr-3 rounded-full border text-[.8125rem] cursor-pointer transition-colors duration-200
+                        {{ $isActive
+                            ? 'bg-stone-900 border-stone-900 text-white shadow-md shadow-stone-900/20'
+                            : 'bg-white/80 border-stone-300/70 text-stone-700 hover:bg-white hover:border-stone-900' }}"
+                >
+                    @if($tag !== 'All')
+                        <span class="w-1.5 h-1.5 rounded-full {{ TechnologyColors::dot($tag) }}" aria-hidden="true"></span>
+                    @endif
+                    {{ $tag }}
+                    <span class="text-xs tabular-nums {{ $isActive ? 'text-white/60' : 'text-stone-400' }}">{{ $tagCounts[$tag] ?? '' }}</span>
+                </button>
+            @endforeach
 
-                {{ $activeTag === $tag
-                    ? 'ring-2 ring-offset-2 ring-stone-900 font-medium'
-                    : ''
-                }}
-
-                {{ $tag === 'All'
-                    ? TechnologyColors::light('All')
-                    : TechnologyColors::light(
-                        config("skill-categories.technologies.$tag", 'All')
-                    )
-                }}"
-            >
-                {{ $tag }}
-            </button>
-        @endforeach
-
+            @if($hiddenTags > 0)
+                <button type="button" @click="all = ! all"
+                        class="shrink-0 snap-start inline-flex items-center h-10 px-3.5 rounded-full border border-dashed border-stone-400/70 text-[.8125rem] text-stone-600 hover:border-stone-900 hover:text-stone-900 cursor-pointer transition-colors"
+                        :aria-expanded="all.toString()">
+                    <span x-text="all ? 'Show fewer' : '+{{ $hiddenTags }} more'">+{{ $hiddenTags }} more</span>
+                </button>
+            @endif
+        </div>
     </div>
 
     {{-- Grid --}}
-    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 wide:grid-cols-5 gap-4 md:gap-5">
         @forelse($projects as $project)
 
             <article
@@ -42,9 +56,10 @@
                 wire:keydown.enter="openModal({{ $project->id }})"
                 tabindex="0"
                 role="button"
+                data-tilt="light"
                 aria-label="View details: {{ $project->title }}"
                 style="--i: {{ $loop->index }}"
-                class="card-in group cursor-pointer flex flex-col bg-white border border-stone-200 rounded-3xl overflow-hidden
+                class="card-in group cursor-pointer flex flex-col bg-white border border-stone-200 rounded-2xl overflow-hidden
                     hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-500/10
                     focus-visible:outline-2 focus-visible:outline-violet-500 transition-all duration-300"
             >
@@ -60,23 +75,23 @@
                         >
                     @else
                         {{-- No image: a gradient of its own, with the initials as a watermark --}}
-                        <div class="w-full h-full bg-linear-to-br {{ Gradient::for($project->title) }} relative flex items-end p-4">
+                        <div class="w-full h-full bg-linear-to-br {{ Gradient::for($project->title) }} relative flex items-end p-3">
                             <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,.35),transparent_55%)]"></div>
-                            <span class="relative font-serif text-6xl leading-none text-white/90 mix-blend-overlay group-hover:scale-110 origin-bottom-left transition-transform duration-700">
+                            <span class="relative font-serif text-5xl wide:text-4xl leading-none text-white/90 mix-blend-overlay group-hover:scale-110 origin-bottom-left transition-transform duration-700">
                                 {{ Gradient::initials($project->title) }}
                             </span>
                         </div>
                     @endif
 
                     @if($project->category)
-                        <span class="absolute top-3 left-3 font-mono text-xs px-3 py-1 rounded-full bg-white/90 backdrop-blur text-stone-800">
+                        <span class="absolute top-3 left-3 font-mono text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-stone-950/55 backdrop-blur text-white">
                             {{ $project->category }}
                         </span>
                     @endif
 
                     @if($project->is_featured)
-                        <span class="absolute top-3 right-3 text-xs font-medium px-2.5 py-1 rounded-full bg-amber-300 text-amber-950">
-                            ★ Featured
+                        <span class="absolute top-3 right-3 w-7 h-7 flex items-center justify-center rounded-full bg-amber-300 text-amber-950 text-xs shadow-sm" title="Featured project" aria-label="Featured project">
+                            ★
                         </span>
                     @endif
 
@@ -91,10 +106,10 @@
                 </div>
 
                 {{-- Body --}}
-                <div class="p-5 flex flex-col flex-1">
+                <div class="p-4 flex flex-col flex-1">
 
                     <div class="flex items-start justify-between gap-3 mb-2">
-                        <h3 class="font-serif text-2xl leading-[1.1] text-stone-900 group-hover:text-violet-700 transition-colors">
+                        <h3 class="font-serif text-2xl wide:text-xl leading-[1.15] text-stone-900 group-hover:text-violet-700 transition-colors">
                             {{ $project->title }}
                         </h3>
 
@@ -103,24 +118,22 @@
                         </span>
                     </div>
 
-                    <p class="text-sm md:text-[15px] text-stone-600 leading-relaxed mb-4 line-clamp-3">
+                    <p class="text-sm wide:text-[.8125rem] text-stone-600 leading-relaxed mb-3 line-clamp-3">
                         {{ $project->short_description }}
                     </p>
 
                     <div class="flex flex-wrap gap-1.5 mt-auto">
-                        @foreach(array_slice($project->tech_tags ?? [], 0, 4) as $tag)
-                            <span
-                                class="text-xs px-2.5 py-1 rounded-full
-                                {{ TechnologyColors::badge($tag) }}"
-                            >
+                        @foreach(array_slice($project->tech_tags ?? [], 0, 3) as $tag)
+                            <span class="inline-flex items-center gap-1.5 text-xs px-2 py-1 rounded-md bg-stone-100 text-stone-700">
+                                <span class="w-1.5 h-1.5 rounded-full {{ TechnologyColors::dot($tag) }}" aria-hidden="true"></span>
                                 {{ $tag }}
                             </span>
                         @endforeach
 
                         {{-- "more" badge --}}
-                        @if(count($project->tech_tags ?? []) > 4)
-                            <span class="text-xs px-2.5 py-1 rounded-full bg-stone-100 text-stone-500">
-                                +{{ count($project->tech_tags) - 4 }}
+                        @if(count($project->tech_tags ?? []) > 3)
+                            <span class="text-xs px-2 py-1 rounded-md text-stone-500 border border-stone-200">
+                                +{{ count($project->tech_tags) - 3 }}
                             </span>
                         @endif
                     </div>
@@ -236,7 +249,7 @@
                         @foreach($caseStudy as $label => $text)
                             <div class="rounded-2xl bg-stone-50 border border-stone-200 p-4">
                                 <dt class="font-mono text-xs uppercase tracking-[.2em] text-violet-600 mb-2">{{ $label }}</dt>
-                                <dd class="text-sm md:text-[15px] text-stone-700 leading-relaxed whitespace-pre-line">{{ $text }}</dd>
+                                <dd class="text-sm md:text-[.9375rem] text-stone-700 leading-relaxed whitespace-pre-line">{{ $text }}</dd>
                             </div>
                         @endforeach
                     </dl>

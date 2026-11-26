@@ -48,7 +48,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="bg-white text-stone-900 antialiased" x-cloak>
+<body class="bg-stone-100 text-stone-900 antialiased" x-cloak>
 
     {{-- ── NAVBAR: a floating pill. Links sit in the bar from "lg" (laptops);
          phones AND tablets get the menu button instead. ─────────────────── --}}

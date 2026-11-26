@@ -11,18 +11,22 @@ class ProjectsGrid extends Component
     public ?int   $openProjectId = null;
     public array  $allTags    = [];
 
+    /** How many published projects use each tag (plus 'All'), for the filter chips. */
+    public array  $tagCounts  = [];
+
     public function mount(): void
     {
-        $tags = Project::published()
+        // Most-used technologies first, ties in alphabetical order
+        $counts = Project::published()
             ->pluck('tech_tags')
             ->flatten()
             ->filter()
-            ->unique()
-            ->sort()
-            ->values()
-            ->toArray();
+            ->countBy()
+            ->sortKeys()
+            ->sortByDesc(fn ($count) => $count);
 
-        $this->allTags = array_merge(['All'], $tags);
+        $this->allTags   = array_merge(['All'], $counts->keys()->all());
+        $this->tagCounts = ['All' => Project::published()->count()] + $counts->all();
     }
 
     public function filterBy(string $tag): void

@@ -1,5 +1,6 @@
 // Alpine and Livewire are loaded by @livewireScripts, so nothing to import here.
 import { initWorkspaceHero } from './workspace-hero';
+import { initTilt } from './tilt';
 
 // ── Scroll reveal ───────────────────────────────────────────────────────────
 // Elements with the class "reveal" fade up once as they scroll into view.
@@ -85,4 +86,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initWorkspaceHero();
     initReveal();
     initScrollSpy();
+    initTilt();
 });

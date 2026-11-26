@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Livewire\CareerTimeline;
+use App\Livewire\ProjectsGrid;
 use App\Models\Project;
 use App\Models\SiteSetting;
 use App\Models\WorkExperience;
@@ -64,6 +65,21 @@ class DesignTest extends TestCase
         foreach ($m[1] as $id) {
             $this->assertStringContainsString('id="'.$id.'"', $html, "No section with id {$id}");
         }
+    }
+
+    public function test_hero_cards_float_at_different_depths_and_cards_can_tilt(): void
+    {
+        foreach (['A', 'B', 'C'] as $i => $t) {
+            Project::create(['title' => "Card $t", 'slug' => "card-$t", 'short_description' => 'x', 'is_featured' => true, 'is_published' => true, 'sort_order' => $i]);
+        }
+
+        // Every hero card gets its own distance from the screen, never an empty value
+        preg_match_all('/data-depth="(\d+)"/', $this->get('/')->getContent(), $m);
+        $this->assertCount(3, $m[1]);
+        $this->assertGreaterThan(1, count(array_unique($m[1])), 'Cards should sit at different depths');
+
+        // Project cards carry the tilt marker the tilt script looks for
+        Livewire::test(ProjectsGrid::class)->assertSeeHtml('data-tilt="light"');
     }
 
     public function test_scroll_reveal_only_hides_content_when_javascript_runs(): void

@@ -17,8 +17,8 @@
                 aria-hidden="true"
                 class="absolute -left-8 md:-left-12 top-0.5 max-md:pointer-events-none w-[19px] h-[19px] md:w-[31px] md:h-[31px] rounded-full border-4 border-stone-950 transition-all duration-200 cursor-pointer hover:scale-110
                 {{ $exp->is_current
-                    ? 'bg-emerald-400 shadow-[0_0_28px_rgba(52,211,153,.7)]'
-                    : 'bg-violet-500 shadow-[0_0_22px_rgba(139,92,246,.55)]' }}"
+                    ? 'bg-emerald-400 shadow-[inset_-3px_-4px_6px_rgba(0,0,0,.3),inset_3px_3px_6px_rgba(255,255,255,.45),0_0_28px_rgba(52,211,153,.7)]'
+                    : 'bg-violet-500 shadow-[inset_-3px_-4px_6px_rgba(0,0,0,.3),inset_3px_3px_6px_rgba(255,255,255,.4),0_0_22px_rgba(139,92,246,.55)]' }}"
             >
             </button>
 
@@ -98,7 +98,7 @@
                     @if($exp->bullets)
                         <ul class="space-y-3 max-w-3xl">
                             @foreach($exp->bullets as $bullet)
-                                <li class="relative pl-6 text-[15px] md:text-base text-stone-300 font-light leading-relaxed">
+                                <li class="relative pl-6 text-[.9375rem] md:text-base text-stone-300 font-light leading-relaxed">
                                     <span class="absolute left-0 top-[.75em] w-3 h-px bg-violet-400"></span>
                                     {{ is_array($bullet) ? ($bullet['bullet'] ?? '') : $bullet }}
                                 </li>
@@ -110,7 +110,7 @@
                     @if($exp->sub_projects)
                         <div class="grid sm:grid-cols-2 gap-3 md:gap-4">
                             @foreach($exp->sub_projects as $sub)
-                                <div class="rounded-2xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.07] hover:border-violet-400/40 transition-colors p-5">
+                                <div data-tilt="dark" class="rounded-2xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.07] hover:border-violet-400/40 transition-colors p-5">
 
                                     <p class="font-serif text-xl text-white leading-snug">
                                         {{ $sub['name'] ?? '' }}

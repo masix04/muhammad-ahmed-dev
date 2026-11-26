@@ -53,9 +53,9 @@
 
         {{-- Glows --}}
         <div class="absolute inset-0 pointer-events-none">
-            <div class="absolute -top-24 -right-24 w-[420px] md:w-[560px] h-[420px] md:h-[560px] bg-violet-600/35 blur-[130px] md:blur-[150px] rounded-full"></div>
-            <div class="absolute -bottom-32 -left-24 w-[380px] md:w-[520px] h-[380px] md:h-[520px] bg-emerald-400/20 blur-[130px] md:blur-[150px] rounded-full"></div>
-            <div class="absolute top-1/3 left-1/3 w-72 h-72 bg-fuchsia-500/10 blur-[130px] rounded-full"></div>
+            <div class="hero-glow absolute -top-24 -right-24 w-[420px] md:w-[560px] h-[420px] md:h-[560px] bg-violet-600/35 blur-[130px] md:blur-[150px] rounded-full"></div>
+            <div class="hero-glow absolute -bottom-32 -left-24 w-[380px] md:w-[520px] h-[380px] md:h-[520px] bg-emerald-400/20 blur-[130px] md:blur-[150px] rounded-full"></div>
+            <div class="hero-glow absolute top-1/3 left-1/3 w-72 h-72 bg-fuchsia-500/10 blur-[130px] rounded-full"></div>
         </div>
 
         {{-- Grid overlay, fading out toward the edges --}}
@@ -101,7 +101,7 @@
                 @if($stats)
                     <div class="grid grid-cols-2 {{ $statColumns }} gap-px bg-white/10 border border-white/10 rounded-2xl overflow-hidden max-w-xl">
                         @foreach($stats as [$n, $l])
-                            <div class="bg-stone-950/80 backdrop-blur px-4 py-3.5">
+                            <div data-spot class="bg-stone-950/80 backdrop-blur px-4 py-3.5">
                                 <div class="font-serif text-3xl text-white leading-none">{{ $n }}</div>
                                 <div class="font-mono text-xs tracking-wide text-stone-400 mt-1.5">{{ $l }}</div>
                             </div>
@@ -144,7 +144,7 @@
             <div class="hidden lg:block relative h-[560px]">
 
                 <div id="workspace"
-                    class="absolute inset-0 perspective-[1800px] xl:-translate-x-10">
+                    class="absolute inset-0 perspective-[1800px] wide:-translate-x-6">
 
                     <div id="workspace-inner"
                         class="relative w-full h-full transform-gpu">
@@ -157,12 +157,13 @@
 
                         @foreach($featuredProjects as $i => $project)
                             @php
+                                $depths = [70, 20, 100, 45, 85, 30, 60]; // how far each card floats toward you (px)
                                 $hasPosition = $project->top_class && $project->left_class;
                                 [$slotTop, $slotLeft] = $heroSlots[$i % count($heroSlots)];
                             @endphp
                             <div class="workspace-card absolute {{ $project->top_class }} {{ $project->left_class }}"
                                 @unless($hasPosition) style="top: {{ $slotTop }}%; left: {{ $slotLeft }}%" @endunless
-                                data-depth="">
+                                data-depth="{{ $depths[$i % count($depths)] }}">
 
                                 <h3>{{ $project->title }}</h3>
 
@@ -211,7 +212,7 @@
                     @foreach([1, 2] as $copy)
                         <div class="flex items-center shrink-0">
                             @foreach($marqueeSkills as $skillName)
-                                <span class="font-mono text-[13px] uppercase tracking-[.18em] text-stone-400 px-6 flex items-center gap-6">
+                                <span class="font-mono text-[.8125rem] uppercase tracking-[.18em] text-stone-400 px-6 flex items-center gap-6">
                                     {{ $skillName }}
                                     <span class="w-1.5 h-1.5 rounded-full bg-violet-500/70"></span>
                                 </span>
@@ -228,7 +229,8 @@
     {{-- ABOUT                                                           --}}
     {{-- ══════════════════════════════════════════════════════════════ --}}
     @if($about)
-        <section id="about" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+        <section id="about" class="bg-stone-100">
+          <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
             <div class="grid md:grid-cols-[1fr_2fr] gap-10 md:gap-16 items-start">
                 <div class="md:sticky md:top-28">
                     <x-section-heading :number="$num('about')" label="About" title="A bit about me" class="!mb-0" />
@@ -243,7 +245,7 @@
                     <p class="reveal font-serif text-2xl md:text-3xl leading-snug text-stone-900">{{ $about[0] }}</p>
 
                     @foreach(array_slice($about, 1) as $i => $paragraph)
-                        <p class="reveal text-base md:text-[17px] text-stone-600 font-light leading-relaxed" style="--delay: {{ ($i + 1) * 90 }}ms">{{ $paragraph }}</p>
+                        <p class="reveal text-base md:text-[1.0625rem] text-stone-600 font-light leading-relaxed" style="--delay: {{ ($i + 1) * 90 }}ms">{{ $paragraph }}</p>
                     @endforeach
 
                     @if($location || $cvUrl)
@@ -259,14 +261,15 @@
                     @endif
                 </div>
             </div>
+          </div>
         </section>
     @endif
 
     {{-- ══════════════════════════════════════════════════════════════ --}}
     {{-- PROJECTS                                                        --}}
     {{-- ══════════════════════════════════════════════════════════════ --}}
-    <section id="projects" class="relative bg-stone-50 border-y border-stone-200/70">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+    <section id="projects" class="relative bg-violet-100/70 border-y border-violet-200/60">
+        <div class="max-w-6xl wide:max-w-[96rem] mx-auto px-4 sm:px-6 py-16 md:py-24">
             <x-section-heading :number="$num('projects')" label="Work" title="Featured Projects">
                 Tap any card for the details, tech breakdown, and links.
             </x-section-heading>
@@ -294,17 +297,19 @@
     {{-- ══════════════════════════════════════════════════════════════ --}}
     {{-- SKILLS                                                          --}}
     {{-- ══════════════════════════════════════════════════════════════ --}}
-    <section id="skills" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+    <section id="skills" class="bg-stone-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
         <x-section-heading :number="$num('skills')" label="Expertise" title="Technical Skills" />
 
         @livewire('skills-section')
+      </div>
     </section>
 
     {{-- ══════════════════════════════════════════════════════════════ --}}
     {{-- CERTIFICATIONS                                                  --}}
     {{-- ══════════════════════════════════════════════════════════════ --}}
-    <section id="certifications" class="bg-stone-50 border-y border-stone-200/70">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+    <section id="certifications" class="bg-violet-100/70 border-y border-violet-200/60">
+        <div class="max-w-6xl wide:max-w-[96rem] mx-auto px-4 sm:px-6 py-16 md:py-24">
             <x-section-heading :number="$num('learning')" label="Learning" title="Certifications & Courses" />
 
             @livewire('certifications-section')
@@ -314,12 +319,14 @@
     {{-- ══════════════════════════════════════════════════════════════ --}}
     {{-- BLOG                                                            --}}
     {{-- ══════════════════════════════════════════════════════════════ --}}
-    <section id="blog" class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+    <section id="blog" class="bg-stone-100">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24">
         <x-section-heading :number="$num('writing')" label="Writing" title="Dev Notes">
             Things I've learned, built, or debugged.
         </x-section-heading>
 
         @livewire('blog-section')
+      </div>
     </section>
 
     {{-- ══════════════════════════════════════════════════════════════ --}}

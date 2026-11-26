@@ -1,9 +1,10 @@
-<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+<div class="grid sm:grid-cols-2 lg:grid-cols-3 wide:grid-cols-5 gap-4 md:gap-5">
     @forelse($certifications as $cert)
 
         <div
             wire:key="cert-{{ $cert->id }}"
-            class="group relative bg-white border border-stone-200 rounded-3xl p-5 md:p-6 flex flex-col gap-4 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-500/10"
+            data-tilt="light"
+            class="group relative bg-white border border-stone-200 rounded-2xl p-5 wide:p-4 flex flex-col gap-4 wide:gap-3 overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-violet-300 hover:shadow-xl hover:shadow-violet-500/10"
         >
             <div class="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-violet-500 via-fuchsia-400 to-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
@@ -13,7 +14,7 @@
                      class="w-full aspect-[4/3] object-cover rounded-xl border border-stone-100">
             @else
             {{-- Icon --}}
-            <div class="w-11 h-11 rounded-2xl bg-violet-100 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-600 transition-colors">
+            <div class="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center flex-shrink-0 group-hover:bg-violet-600 transition-colors">
                 <svg
                     class="w-5 h-5 text-violet-600 group-hover:text-white transition-colors"
                     fill="none"
@@ -34,7 +35,7 @@
             {{-- Content --}}
             <div class="flex-1">
 
-                <p class="font-serif text-xl text-stone-900 leading-snug">
+                <p class="font-serif text-xl wide:text-lg text-stone-900 leading-snug">
                     {{ $cert->title }}
                 </p>
 
@@ -49,7 +50,7 @@
                 @endif
 
                 @if($cert->description)
-                    <p class="text-sm text-stone-500 leading-relaxed mt-3">
+                    <p class="text-sm wide:text-[.8125rem] text-stone-500 leading-relaxed mt-3">
                         {{ $cert->description }}
                     </p>
                 @endif

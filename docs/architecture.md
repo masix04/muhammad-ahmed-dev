@@ -15,7 +15,8 @@ A **Laravel 13** app that renders one public page (the portfolio) and a small bl
 | Admin panel | Filament 5 | `/admin`: forms and tables for every kind of content |
 | Styling | Tailwind CSS 4 (via Vite) | All styling; no component library |
 | Small interactions | Alpine.js (bundled with Livewire) | Mobile menu, popup focus trap and Escape key |
-| Hero animation | Plain JavaScript (`resources/js/workspace-hero.js`) | CSS 3D tilt and float of the featured-project cards (laptop and up). Runs only while the hero is on screen, and not at all for visitors who prefer reduced motion |
+| Hero animation | Plain JavaScript (`resources/js/workspace-hero.js`) | 3D scene of the featured-project cards (laptop and up): each card floats at its own depth (`data-depth`), leans toward the cursor and gets a moving shine; the stack tilts a few degrees and the glows behind move the other way. Runs only while the hero is on screen, and shows one still frame for visitors who prefer reduced motion |
+| Card tilt | Plain JavaScript (`resources/js/tilt.js`) | Elements marked `data-tilt="light"` (white cards) or `data-tilt="dark"` lean up to 6 degrees toward the mouse with a light that follows it; `data-spot` gives only the light (stat tiles). Used on project cards, certification cards and the timeline's sub-project cards |
 | Database | SQLite | Content, settings, messages, sessions, cache |
 | Packaging | Docker | One image that builds the assets and serves the site |
 
@@ -117,13 +118,15 @@ Filament refuses access outside `APP_ENV=local` unless the user model says it is
 
 ## Design system
 
-A dark, glowing hero and dark sections for Experience and Contact, with light "paper" sections between them, serif display type, small monospace labels and glass cards.
+A dark, glowing hero and dark sections for Experience and Contact, with tinted light sections between them, serif display type, small monospace labels and glass cards.
 
 | Piece | Where | What it does |
 | --- | --- | --- |
 | Colours | Tailwind classes in the views | Ink `stone-950` and paper `stone-50`/white, violet as the main accent, emerald as the second. The signature gradient (violet, pink, emerald) is the `.text-gradient` class and `from-violet-600 to-fuchsia-500` on buttons |
 | Type | `resources/css/app.css` | **Instrument Serif** for display text, **DM Sans** for body, **DM Mono** for labels. Sizes are deliberately modest: the page title tops out at about 5.5rem, section titles at 3rem |
-| Light/dark rhythm | `home.blade.php` | Dark: hero, Experience, Contact (and the footer). Light: About, Skills, Blog. Slightly grey: Projects, Certifications |
+| Light/dark rhythm | `home.blade.php` | Dark: hero, Experience, Contact (and the footer). Warm grey (`stone-100`): About, Skills, Blog. Soft lavender (`violet-100/70`): Projects, Certifications. The page is never plain white, so white cards stand out |
+| Compact scale | `html` rule in `app.css`, `wide` breakpoint | From 1200px up the root font size is 80%. Everything is sized in `rem`, so the whole page shrinks evenly: the look of browser zoom 80% at 100%. Use `rem` (not `px`) for new sizes or they will not scale. `wide:` is the Tailwind prefix for 1200px and up |
+| Badges | `projects-grid`, `skills-section` | Filter chips are neutral with a small coloured dot per category; the active one is solid dark. Project chips show how many projects use each technology, most used first, with a `+N more` button for the rest. Skill categories are one segmented control. Card tags are small grey tags with a coloured dot; the featured mark is a star badge |
 | Section opener | `components/section-heading.blade.php` | `<x-section-heading number label title :dark>`: numbered mono label, title, optional subtitle |
 | Blog card | `components/blog-card.blade.php` | One card used on the home page and on `/blog` |
 | Gradient fallback | `app/Support/Gradient.php` | Projects and posts without an image get a stable gradient (the same title always gets the same one) with two-letter initials as a watermark |
@@ -131,15 +134,25 @@ A dark, glowing hero and dark sections for Experience and Contact, with light "p
 | Hero slider | `home.blade.php`, `workspace-hero.js` | Floating glass cards on laptops, a swipeable row on phones and tablets |
 | Technology ticker | view composer in `AppServiceProvider` | The scrolling strip under the hero shows the first 18 visible skills |
 | Scroll spy | `initScrollSpy` in `resources/js/app.js`, `.nav-underline` in `app.css` | Links marked `data-spy-link` point at `/#section`. As you scroll, the section that has passed about a third of the screen becomes active: its link turns darker (`aria-current="location"`) and a gradient underline slides under it in the top bar (the menu on phones and tablets highlights the link instead). Nothing happens on pages without those sections, such as the blog. The underline stops animating for visitors who prefer reduced motion |
-| Scroll reveal | `resources/js/app.js` + `.reveal` in `app.css` | Elements with `reveal` fade up once as they scroll into view |
+| Scroll reveal | `resources/js/app.js` + `.reveal` in `app.css` | Elements with `reveal` rise and turn toward you (a small 3D tilt) once as they scroll into view |
+| 3D details | `app.css`, `career-timeline.blade.php` | Timeline dots are shaded like small spheres (inset highlight and shadow) |
 
 ### Phones and tablets
 
 - **Breakpoints.** The links in the top bar only appear from `lg` (laptops, 1024px and up). Phones and tablets get the menu button, so the bar never gets cramped.
 - **Tap targets.** Buttons and links are at least 40px tall on touch-size screens.
+- **Projects and certifications grids.** 1 column on phones, 2 on tablets, 3 on small laptops and 5 from 1200px (`wide:`). These two sections are also wider than the others at that size.
 - **Wide rows scroll instead of wrapping.** The project and skill filters are one swipeable row on phones and wrapping chips from `sm` up. The hero projects are a swipeable row below `lg`.
 - **The project popup** is a full-screen sheet on phones and a centred card from `sm` up.
 - **No sideways scrolling.** `body` clips horizontal overflow, and grid columns that hold a scrolling row use `minmax(0, 1fr)` so the row can never stretch the page.
+
+### 3D effects: where they run
+
+- **Laptop-size screens with a mouse only.** `tilt.js` checks `(hover: hover) and (pointer: fine) and (min-width: 1024px)`. Phones and tablets get no tilt, and the hero cards are a flat swipeable row there.
+- **Reduced motion.** Visitors who ask for less motion get no tilt, no floating and no entrance turn.
+- **To tilt another element,** add `data-tilt="light"` (on a white background) or `data-tilt="dark"`. The element needs a rounded shape of its own (`rounded-*`) so the light stays inside it.
+- **Entrance animations use `backwards`, not `both`.** A finished `both` animation keeps its last `transform` and would stop the card from tilting.
+- **Tailwind's `hover:-translate-y-*` uses the separate `translate` property,** so it combines with the tilt, which uses `transform`.
 
 ### Things to know when changing the design
 
@@ -166,7 +179,7 @@ A dark, glowing hero and dark sections for Experience and Contact, with light "p
 
 ## Tests
 
-`php artisan test` runs 53 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
+`php artisan test` runs 54 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
 
 ## Known limitations
 
