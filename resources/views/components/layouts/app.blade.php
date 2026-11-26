@@ -70,16 +70,18 @@
                 <span class="logo-text hidden min-[400px]:inline text-sm font-medium" :class="(heroDark && !scrolled && !menuOpen) ? 'text-white' : 'text-stone-900'">{{ $siteName }}</span>
             </a>
 
-            <div class="hidden lg:flex items-center gap-7 text-sm">
+            <div class="nav-links relative hidden lg:flex items-center gap-7 text-sm">
+                {{-- Slides under whichever section is on screen (see initScrollSpy in app.js) --}}
+                <span class="nav-underline" aria-hidden="true"></span>
                 {{-- "/#…" so the links also work from the blog pages --}}
                 @if(SiteSetting::get('about_text'))
-                    <a href="/#about"      class="py-3 opacity-70 hover:opacity-100 transition-opacity">About</a>
+                    <a href="/#about"      data-spy-link class="py-3 opacity-70 hover:opacity-100 transition-opacity">About</a>
                 @endif
-                <a href="/#projects"       class="py-3 opacity-70 hover:opacity-100 transition-opacity">Projects</a>
-                <a href="/#experience"     class="py-3 opacity-70 hover:opacity-100 transition-opacity">Experience</a>
-                <a href="/#skills"         class="py-3 opacity-70 hover:opacity-100 transition-opacity">Skills</a>
-                <a href="/#certifications" class="py-3 opacity-70 hover:opacity-100 transition-opacity">Learning</a>
-                <a href="/#blog"           class="py-3 opacity-70 hover:opacity-100 transition-opacity">Blog</a>
+                <a href="/#projects"       data-spy-link class="py-3 opacity-70 hover:opacity-100 transition-opacity">Projects</a>
+                <a href="/#experience"     data-spy-link class="py-3 opacity-70 hover:opacity-100 transition-opacity">Experience</a>
+                <a href="/#skills"         data-spy-link class="py-3 opacity-70 hover:opacity-100 transition-opacity">Skills</a>
+                <a href="/#certifications" data-spy-link class="py-3 opacity-70 hover:opacity-100 transition-opacity">Learning</a>
+                <a href="/#blog"           data-spy-link class="py-3 opacity-70 hover:opacity-100 transition-opacity">Blog</a>
             </div>
 
             <div class="flex items-center gap-2">
@@ -135,7 +137,7 @@
                     '/#blog' => 'Blog',
                     '/#contact' => 'Contact',
                 ]) as $href => $label)
-                    <a href="{{ $href }}" @click="menuOpen = false"
+                    <a href="{{ $href }}" data-spy-link @click="menuOpen = false"
                        class="flex items-center min-h-12 border-b border-stone-100 last:border-0 hover:text-violet-600 transition-colors">{{ $label }}</a>
                 @endforeach
                 @if($cvUrl)

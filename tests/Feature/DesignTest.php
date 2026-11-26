@@ -52,6 +52,20 @@ class DesignTest extends TestCase
         $this->assertStringContainsString('hidden lg:flex items-center gap-7', $html);
     }
 
+    public function test_nav_links_can_be_tracked_while_scrolling_and_each_points_at_a_real_section(): void
+    {
+        $html = $this->get('/')->getContent();
+
+        $this->assertStringContainsString('class="nav-underline"', $html);
+
+        // Every desktop link carries the scroll-spy marker and targets a section on the page.
+        preg_match_all('/<a href="\/#(\w+)"\s+data-spy-link/', $html, $m);
+        $this->assertGreaterThanOrEqual(5, count($m[1]));
+        foreach ($m[1] as $id) {
+            $this->assertStringContainsString('id="'.$id.'"', $html, "No section with id {$id}");
+        }
+    }
+
     public function test_scroll_reveal_only_hides_content_when_javascript_runs(): void
     {
         // The "js" class is added by a script in the head; the CSS only hides .reveal under it.

@@ -130,6 +130,7 @@ A dark, glowing hero and dark sections for Experience and Contact, with light "p
 | Navigation | `components/layouts/app.blade.php` | A floating pill. It starts light-on-dark over a dark top and turns white once you scroll. Pages with a dark top pass `:hero-dark="true"` (home, blog list, blog post) |
 | Hero slider | `home.blade.php`, `workspace-hero.js` | Floating glass cards on laptops, a swipeable row on phones and tablets |
 | Technology ticker | view composer in `AppServiceProvider` | The scrolling strip under the hero shows the first 18 visible skills |
+| Scroll spy | `initScrollSpy` in `resources/js/app.js`, `.nav-underline` in `app.css` | Links marked `data-spy-link` point at `/#section`. As you scroll, the section that has passed about a third of the screen becomes active: its link turns darker (`aria-current="location"`) and a gradient underline slides under it in the top bar (the menu on phones and tablets highlights the link instead). Nothing happens on pages without those sections, such as the blog. The underline stops animating for visitors who prefer reduced motion |
 | Scroll reveal | `resources/js/app.js` + `.reveal` in `app.css` | Elements with `reveal` fade up once as they scroll into view |
 
 ### Phones and tablets
@@ -165,7 +166,7 @@ A dark, glowing hero and dark sections for Experience and Contact, with light "p
 
 ## Tests
 
-`php artisan test` runs 52 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
+`php artisan test` runs 53 tests against an in-memory database: home page and its share tags, blog routes and scheduling, contact form (saving, mail, honeypot, rate limit), project filter and popup, case-study display, hidden skills, company link and certificate image, hero card positions, settings, sitemap and robots, seeding that must not overwrite edits, and admin access outside the local environment.
 
 ## Known limitations
 

@@ -324,3 +324,16 @@ html { scroll-padding-top: 5rem; }
 
 /* ── Blog body ────────────────────────────────────────────────────────────── */
 .post-body { font-size: 1.0625rem; }
+
+/* ── Scroll spy: the underline that slides under the current section's nav link ── */
+.nav-underline {
+    position: absolute; left: 0; bottom: 8px; height: 2px; width: var(--w, 0px);
+    border-radius: 2px; background: linear-gradient(90deg, #8b5cf6, #d946ef);
+    transform: translateX(var(--x, 0px)); opacity: 0; pointer-events: none;
+    transition: transform .4s cubic-bezier(.4, 0, .2, 1), width .4s cubic-bezier(.4, 0, .2, 1), opacity .25s;
+}
+.nav-links.has-active .nav-underline { opacity: 1; }
+a[data-spy-link].is-active { opacity: 1 !important; color: var(--color-stone-900); }
+.nav-dark a[data-spy-link].is-active { color: #fff; }
+#mobile-menu a[data-spy-link].is-active { color: #7c3aed; }
+@media (prefers-reduced-motion: reduce) { .nav-underline { transition: none; } }
